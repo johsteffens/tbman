@@ -42,7 +42,7 @@ It uses/falls-back-to system functions for acquiring memory pools, for its own m
 ## Motivation for this project
 The management algorithm has been conceived and designed for the project [beth](https://github.com/johsteffens/beth).
 [Tbman](https://github.com/johsteffens/tbman) is a stand-alone spin-off offered for general purpose usage. 
-I hope it will speed up your program and the you find the additional features useful.
+I hope it will enrich your program.
 
 **More Details:**
 * *Coming soon ...*
