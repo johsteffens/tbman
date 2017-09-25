@@ -1,4 +1,4 @@
-# Tbman - Fast and easy to use general purpose Memory Manager
+# Tbman - Fast and easy-to-use general-purpose Memory Manager
 
 ## What it is
 Tbman is a memory manager offering functions 
