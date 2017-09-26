@@ -22,7 +22,7 @@ in C and C++ programs.
 **Quick evaluation**:
 * `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
-**In your code:**
+**In your workspace:**
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
 * In your code: 
   * `#include "tbman.h"`
