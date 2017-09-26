@@ -27,6 +27,8 @@ in C and C++ programs.
 * In your code: 
   * `#include "tbman.h"`
   * Call once `tbman_open();` at the beginning or your program. *(E.g. first in `main()`)*
+  * Use `tbman_*` - functions anywhere. 
+    <br><sub>Note: Do not mix stdlib and tbman alloc-functions for the same memory instance.</sub>
   * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`) *
 
 **Build requirements:**
