@@ -13,10 +13,10 @@ in C and C++ programs.
 
 ## Benefits
 * Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#how-to-use-it)
-* Automatic alignment even for extended data types (E.g. SIMD types such as `int32x4_t`)
+* Automatic alignment even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
 * Reduced fragmentation of system memory.
-* Easy monitoring of total memory usage (e.g. for leak detection)
-* Optional communicaton of actually granted amounts (useful for dynamic arrays)
+* Easy monitoring of total memory usage. *(E.g. for leak detection)*
+* Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
 
 ## How to use it
 **Quick evaluation**:
