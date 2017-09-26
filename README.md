@@ -1,7 +1,7 @@
-# Tbman - Fast and easy-to-use general-purpose Memory Manager
+# Tbman - Fast and easy Memory Manager
 
 ## What it is
-Tbman is a memory manager offering (among others) these functions 
+Tbman is a general-purpose memory manager offering (among others) these functions 
 
 `tbman_malloc, tbman_free, tbman_realloc`
 
