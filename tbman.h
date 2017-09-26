@@ -82,7 +82,7 @@ void tbman_close();
  *    integer power of 2, returns an address aligned to the lesser of m and TBMAN_ALIGN
  *    (TBMAN_ALIGN is defined in tbman.c).
  *    This provides correct alignment of standard data types but also for composite types
- *    (e.g. int32_4_t) for use with a SIMD extension of the CPU (e.g. Intel's SSE or ARM's Neon).
+ *    (e.g. int32x4_t) for use with a SIMD extension of the CPU (e.g. Intel's SSE or ARM's Neon).
  *
  */
 void* tbman_alloc(                void* current_ptr,                      size_t requested_size, size_t* granted_size );
