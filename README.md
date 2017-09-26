@@ -40,9 +40,9 @@ Multiple such pools are strategically combined and managed in a btree.
 It uses/falls-back-to system functions for acquiring memory pools, for its own memory needs and for large memory requests.
 
 ## Motivation for this project
-The management algorithm has been conceived and designed for the project [beth](https://github.com/johsteffens/beth).
-[Tbman](https://github.com/johsteffens/tbman) is a stand-alone spin-off offered for general purpose usage. 
-I hope it will enrich your program.
+This memory manager has been developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created this spin-off-project [Tbman](https://github.com/johsteffens/tbman) where the manager is offered as stand-alone solution.
+
+I hope you will find it useful.
 
 **More Details:**
 * *Coming soon ...*
