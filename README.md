@@ -26,25 +26,34 @@ in C and C++ programs.
 **In your code:**
 * Compile tbman.c and btree.c (either among your source files or into a static library)
 * In your code: `#include "tbman.h"`
-* At the beginning or your program call once: `tbman_open();`
-* Use other tbman-functions.
-* At the end or your program call once: `tbman_close();`
+* At the beginning or your program (e.g. first in `main()`) call once: `tbman_open();`
+* At the end or your program (e.g. last in `main()`) call once: `tbman_close();`
 
-**Build Requirements:**
+**Build requirements:**
 * `-std=c11`
 * `-lpthread`  (tbman uses pthread_mutex for thread safety)
 
+**C++:**
+
+You can use tbman in C++ code with a few precautions:
+* Consider compiling tbman.c btree.c as C code into a dedicated library and include tbman.h via `extern "C" { #include "tbman.h" }`.
+* In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of additional functionality such as class construction/destruction. However, you can overload these operators taking control over the memory management part. Example:
+   * `void* operator new( size_t size ) { return tbman_malloc( size ); }`
+   * `void* operator new[]( size_t size ) { return tbman_malloc( size ); }`
+   * `void operator detete( void* p ) { tbman_free( p ); }`
+   * `void operator detete[]( void* p ) { tbman_free( p ); }`
+   
 ## How it works
 Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
 
-For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all granted memory.
+For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
 
 **More Details:**
 * *Coming soon ...*
 
 ## Motivation
-This memory manager has been developed for the project [beth](https://github.com/johsteffens/beth). It reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
+This memory manager has been conceived and developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
 
-I hope you will find it useful.
+Thanks for reading. I hope you will find it useful.
 
 <sub>*Johannes Steffens*</sub>
