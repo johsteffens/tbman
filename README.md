@@ -13,18 +13,17 @@ in C and C++ programs.
 
 ## Benefits
 * Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#how-to-use-it)
-* Automatic alignment even for extended data types (E.g. SIMD types such as int32x4_t)
-* Reduces fragmentation of system memory.
-* Additional features:
-    * Easy monitoring of total memory usage (e.g. for leak detection)
-    * Optional communicaton of actually granted amounts (useful for dynamic arrays)
+* Automatic alignment even for extended data types (E.g. SIMD types such as `int32x4_t`)
+* Reduced fragmentation of system memory.
+* Easy monitoring of total memory usage (e.g. for leak detection)
+* Optional communicaton of actually granted amounts (useful for dynamic arrays)
 
 ## How to use it
 **Quick evaluation**:
-* `gcc -std=c11 -O3 *.c -lm -lpthread; ./a.out`
+* `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 **In your code:**
-* Compile tbman.c and btree.c (either among your source files or into a static library)
+* Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
 * In your code: `#include "tbman.h"`
 * At the beginning or your program (e.g. first in `main()`) call once: `tbman_open();`
 * At the end or your program (e.g. last in `main()`) call once: `tbman_close();`
@@ -37,11 +36,12 @@ in C and C++ programs.
 
 You can use tbman in C++ code with a few precautions:
 * Consider compiling tbman.c btree.c as C code into a dedicated library and include tbman.h via `extern "C" { #include "tbman.h" }`.
-* In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of additional functionality such as class construction/destruction. However, you can overload these operators taking control over the memory management part. Example:
+* In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of additional functionality such as object construction/destruction. However, you can overload these operators taking control over the memory management part. Example:
    * `void* operator new( size_t size ) { return tbman_malloc( size ); }`
    * `void* operator new[]( size_t size ) { return tbman_malloc( size ); }`
    * `void operator detete( void* p ) { tbman_free( p ); }`
    * `void operator detete[]( void* p ) { tbman_free( p ); }`
+* Here is a nice external article about overloading allocation operators: http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
    
 ## How it works
 Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
