@@ -20,6 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+/** Test and evaluation program for a memory manager.
+ *  This application realistically simulates memory-intensive usage of
+ *  memory management, monitoring data integrity and processing speed.
+ *  It compares tbman with stdlib's memory manager.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
