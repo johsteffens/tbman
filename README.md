@@ -24,9 +24,10 @@ in C and C++ programs.
 
 **In your code:**
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
-* In your code: `#include "tbman.h"`
-* At the beginning or your program (e.g. first in `main()`) call once: `tbman_open();`
-* At the end or your program (e.g. last in `main()`) call once: `tbman_close();`
+* In your code: 
+  * `#include "tbman.h"`
+  * Call once `tbman_open();` at the beginning or your program. *(E.g. first in `main()`)*
+  * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`) *
 
 **Build requirements:**
 * `-std=c11`
