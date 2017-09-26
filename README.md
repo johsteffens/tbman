@@ -1,7 +1,7 @@
 # Tbman - Fast and easy-to-use general-purpose Memory Manager
 
 ## What it is
-Tbman is a memory manager offering functions 
+Tbman is a memory manager offering (among others) these functions 
 * tbman_malloc, 
 * tbman_free 
 * tbman_realloc 
@@ -12,12 +12,13 @@ which can replace corresponding stdlib's functions
 * free
 * realloc 
 
-in C and C++ programs to speed up memory management in your programs and to enrich your project with additional features.
+in C and C++ programs.
 
 ## Benefits
-* Generally faster than stdlib functions. *You can quickly verify this yourself.*
+* Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#how-to-use-it)
 * Monitoring total memory usage of your program.
-* Additional alloc-features to further improve memory efficiency in your programs.
+* Additional features to further improve memory control and efficiency in your programs.
+* Extended automatic data alignment (E.g. SIMD data types such as int32_4_t)
 
 ## How to use it
 **Quick evaluation**:
@@ -39,10 +40,12 @@ Tbman employs memory pooling via token-based fixed size block-managers.
 Multiple such pools are strategically combined and managed in a btree.
 It uses/falls-back-to system functions for acquiring memory pools, for its own memory needs and for large memory requests.
 
+**More Details:**
+* *Coming soon ...*
+
 ## Motivation for this project
-This memory manager has been developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created this spin-off-project [Tbman](https://github.com/johsteffens/tbman) where the manager is offered as stand-alone solution.
+This memory manager has been developed for the project [beth](https://github.com/johsteffens/beth). It reached sufficient maturity for general purpose and platform independent usage. We therefore created this spin-off-project [Tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
 
 I hope you will find it useful.
 
-**More Details:**
-* *Coming soon ...*
+<sub>*Johannes Steffens*</sub>
