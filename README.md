@@ -41,9 +41,7 @@ You can use tbman in C++ code with a few precautions:
 * Consider compiling tbman.c btree.c as C code into a dedicated library and include tbman.h via `extern "C" { #include "tbman.h" }`.
 * In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of additional functionality such as object construction/destruction. However, you can overload these operators taking control over the memory management part. Example:
    * `void* operator new( size_t size ) { return tbman_malloc( size ); }`
-   * `void* operator new[]( size_t size ) { return tbman_malloc( size ); }`
    * `void operator detete( void* p ) { tbman_free( p ); }`
-   * `void operator detete[]( void* p ) { tbman_free( p ); }`
 * Here is a nice external article about overloading allocation operators: http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
    
 ## How it works
