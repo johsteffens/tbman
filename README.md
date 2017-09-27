@@ -56,7 +56,8 @@ You can use tbman in C++ code as follows:
     void* operator new( size_t size ) { return tbman_malloc( size ); }
     void operator detete( void* p ) { tbman_free( p ); }
     ```
-* Here is a nice external article about overloading allocation operators: http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
+    Here is a nice external article about overloading allocation operators:<br>
+    http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
    
 ## How it works
 Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
