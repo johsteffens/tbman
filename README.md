@@ -12,7 +12,7 @@ which can replace corresponding stdlib functions
 in C and C++ code.
 
 ## Benefits
-* Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#how-to-use-it)
+* Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#anchor_quick_evaluation)
 * Automatic alignment even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
 * Reduced fragmentation of system memory.
 * Easy monitoring of total memory usage. *(E.g. for leak detection)*
@@ -23,6 +23,7 @@ in C and C++ code.
    * It has been tested on Intel and ARM platforms.
 
 ## How to use it
+<a name="anchor_quick_evaluation"></a>
 **Quick evaluation**:
 
 `eval.c` is an evaluation program simulating realistic conditions for memory management. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
