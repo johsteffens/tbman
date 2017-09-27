@@ -47,7 +47,7 @@ You can use tbman in C++ as follows:
      #include "tbman.h"
   }
   ```
-* In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.<br>
+* In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.<br>
 **Example:**
     ```C++
     void* operator new( size_t size ) { return tbman_malloc( size ); }
