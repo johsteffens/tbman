@@ -3,13 +3,13 @@
 ## What it is
 Tbman is a general-purpose memory manager offering (among others) these functions 
 
-`tbman_malloc, tbman_free, tbman_realloc`
+`tbman_malloc, tbman_free, tbman_realloc`,
 
 which can replace corresponding stdlib's functions
 
-`malloc, free, realloc`
+`malloc, free, realloc`,
 
-in C and C++ programs.
+in C and C++ code.
 
 ## Benefits
 * Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#how-to-use-it)
