@@ -39,7 +39,7 @@ in C and C++ code.
 
 **C++:**
 
-You can use tbman in C++ as follows:
+You can use tbman in C++ code as follows:
 * In your C++ code, include tbman.h as C-header:<br>
   ```C++
   extern "C"
