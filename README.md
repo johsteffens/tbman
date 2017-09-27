@@ -28,7 +28,7 @@ in C and C++ code.
 
 `eval.c` is an evaluation program simulating realistic runtime conditions for a memory manager. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
    * Download this project.
-   * (Linux) In folder with source files, run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
+   * (Linux) Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 **In your workspace:**
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
