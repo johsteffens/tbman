@@ -17,6 +17,7 @@ in C and C++ programs.
 * Reduced fragmentation of system memory.
 * Easy monitoring of total memory usage. *(E.g. for leak detection)*
 * Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
+* Platform independence: Tbman adheres to the c11-standard. It can be build on all platforms supporting the [build requirements](#anchor_build_requirements) below.
 
 ## How to use it
 **Quick evaluation**:
@@ -31,15 +32,20 @@ in C and C++ programs.
     <br><sub>Note: Do not mix stdlib and tbman alloc-functions for the same memory instance.</sub>
   * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`)*
 
+<a name="anchor_build_requirements"></a>
 **Build requirements:**
-* `-std=c11`
-* `-lpthread`  (tbman uses pthread_mutex for thread safety)
+* Your C-comiler should support the C11 standard: `-std=c11`
+* Tbman uses the pthread library: `-lpthread`
 
 **C++:**
 
-You can use tbman in C++ code with a few precautions:
-* Consider compiling tbman.c btree.c as C code into a dedicated library and include tbman.h via `extern "C" { #include "tbman.h" }`.
-* In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of additional functionality such as object construction/destruction. However, you can overload these operators taking control over the memory management part. Example:
+You can use tbman in C++ as follows:
+* In your C++ code, include tbman.h as C-header:<br>
+  `extern "C"`<br>
+  `{`<br>
+  `#include "tbman.h"`<br>
+  `}`
+* In object oriented C++ programming, the direct use of 'malloc', 'realloc' and 'free' is discouraged in favor of using operators 'new' and 'delete', which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation. Example:
    * `void* operator new( size_t size ) { return tbman_malloc( size ); }`
    * `void operator detete( void* p ) { tbman_free( p ); }`
 * Here is a nice external article about overloading allocation operators: http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
