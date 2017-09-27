@@ -24,7 +24,10 @@ in C and C++ code.
 
 ## How to use it
 **Quick evaluation**:
-* `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
+
+`eval.c` is an evaluation program simulating realistic conditions for memory management. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
+   * Download this project.
+   * (Linux) In folder with source files, run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 **In your workspace:**
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
