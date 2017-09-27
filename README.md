@@ -17,7 +17,10 @@ in C and C++ code.
 * Reduced fragmentation of system memory.
 * Easy monitoring of total memory usage. *(E.g. for leak detection)*
 * Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
-* Platform independence: Tbman adheres to the c11-standard. It can be used on any platform satisfying the [build requirements](#anchor_build_requirements) below. It has been tested on Intel and ARM platforms.
+* Platform independence: 
+   * The code adheres to the c11-standard.
+   * It can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
+   * It has been tested on Intel and ARM platforms.
 
 ## How to use it
 **Quick evaluation**:
