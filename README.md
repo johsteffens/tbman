@@ -74,7 +74,9 @@ This memory manager has been conceived and developed for the project [beth](http
 ## Use in multi-threaded applications
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
-Concurrency is currently achieved by only one mutex. This means that memory management is not truly parallel. During simultaneous memory requests, one thread is put on hold until the request in the other completes. Normally this should not significantly affect processing speed for typical multi threaded programs. However, during heavvy simultaneous manager usage by multiple threads, lock-time might accumulate to a signficant share.
+Concurrency is currently achieved by only one mutex. This means that memory management is not truly parallel. During simultaneous memory requests, one thread is put on hold until the request in the other completes. Normally this should not significantly affect processing speed for typical multi threaded programs. However, during heavvy simultaneous manager usage, the lock-time might accumulate to a signficant share.
+
+
 
 Thanks for reading. I hope you will find it useful.
 
