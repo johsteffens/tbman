@@ -68,13 +68,13 @@ Tbman uses a "conservative" memory pooling approach with multiple token-based fi
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
 
-## Motivation
-This memory manager has been conceived and developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
-
-## Use in multi-threaded applications
+### Use in multi-threaded applications
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
 Concurrency is currently achieved by only one mutex. This means that memory management is not truly parallel. During simultaneous memory requests, one thread is put on hold until the request in the other completes. Normally this should not significantly affect processing speed for typical multi threaded programs. However, during heavvy simultaneous manager usage, the lock-time might accumulate to a signficant share.
+
+## Motivation
+This memory manager has been conceived and developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
 
 
 
