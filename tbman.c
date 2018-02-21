@@ -47,13 +47,13 @@ static const bool   default_full_align = true;
 
 static void ext_err( const char* func, const char* file, int line, const char* format, ... )
 {
-	fprintf( stderr, "error in function %s (%s:%i):\n", func, file, line );
-	va_list args;
-	va_start( args, format );
-	vfprintf( stderr, format, args );
-	va_end( args );
-	fprintf( stderr, "\n" );
-	abort();
+    fprintf( stderr, "error in function %s (%s:%i):\n", func, file, line );
+    va_list args;
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    fprintf( stderr, "\n" );
+    abort();
 }
 
 #define ERR( ... ) ext_err( __func__, __FILE__, __LINE__, __VA_ARGS__ )
@@ -62,13 +62,13 @@ static void ext_err( const char* func, const char* file, int line, const char* f
 
 static inline void* stdlib_alloc( void* current_ptr, size_t requested_size )
 {
-	if( requested_size == 0 )
-	{
-		if( current_ptr ) free( current_ptr );
-		current_ptr = NULL;
-	}
-	else
-	{
+    if( requested_size == 0 )
+    {
+        if( current_ptr ) free( current_ptr );
+        current_ptr = NULL;
+    }
+    else
+    {
         if( current_ptr )
         {
             current_ptr = realloc( current_ptr, requested_size );
@@ -79,7 +79,7 @@ static inline void* stdlib_alloc( void* current_ptr, size_t requested_size )
         }
         if( !current_ptr ) ERR( "Failed allocating %zu bytes", requested_size );
     }
-	return current_ptr;
+    return current_ptr;
 }
 
 /**********************************************************************************************************************/
@@ -744,16 +744,16 @@ void* tbman_s_alloc( tbman_s* o, void* current_ptr, size_t requested_size, size_
 {
     pthread_mutex_lock( &o->mutex );
     void* ret = NULL;
-	if( requested_size == 0 )
-	{
-		if( current_ptr )
+    if( requested_size == 0 )
+    {
+        if( current_ptr )
         {
             tbman_s_free( o, current_ptr, NULL );
         }
         if( granted_size ) *granted_size = 0;
-	}
-	else
-	{
+    }
+    else
+    {
         if( current_ptr )
         {
             ret = tbman_s_realloc( o, current_ptr, NULL, requested_size, granted_size );
@@ -764,23 +764,23 @@ void* tbman_s_alloc( tbman_s* o, void* current_ptr, size_t requested_size, size_
         }
     }
     pthread_mutex_unlock( &o->mutex );
-	return ret;
+    return ret;
 }
 
 void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size )
 {
     pthread_mutex_lock( &o->mutex );
     void* ret = NULL;
-	if( requested_size == 0 )
-	{
-		if( current_size ) // 0 means current_ptr may not be used for free or realloc
+    if( requested_size == 0 )
+    {
+        if( current_size ) // 0 means current_ptr may not be used for free or realloc
         {
             tbman_s_free( o, current_ptr, &current_size );
         }
         if( granted_size ) *granted_size = 0;
-	}
-	else
-	{
+    }
+    else
+    {
         if( current_size ) // 0 means current_ptr may not be used for free or realloc
         {
             ret = tbman_s_realloc( o, current_ptr, &current_size, requested_size, granted_size );
@@ -791,7 +791,7 @@ void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t
         }
     }
     pthread_mutex_unlock( &o->mutex );
-	return ret;
+    return ret;
 }
 
 static size_t tbman_s_total_external_alloc( const tbman_s* o )

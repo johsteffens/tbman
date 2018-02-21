@@ -31,13 +31,13 @@ SOFTWARE.
 
 static void ext_err( const char* func, const char* file, int line, const char* format, ... )
 {
-	fprintf( stderr, "error in function %s (%s:%i):\n", func, file, line );
-	va_list args;
-	va_start( args, format );
-	vfprintf( stderr, format, args );
-	va_end( args );
-	fprintf( stderr, "\n" );
-	abort();
+    fprintf( stderr, "error in function %s (%s:%i):\n", func, file, line );
+    va_list args;
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    fprintf( stderr, "\n" );
+    abort();
 }
 
 #define ERR( ... ) ext_err( __func__, __FILE__, __LINE__, __VA_ARGS__ )

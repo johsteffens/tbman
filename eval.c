@@ -379,14 +379,14 @@ void alloc_challenge
 // generalized alloc function purely based on stdlib
 static inline void* external_alloc( void* current_ptr, size_t requested_bytes, size_t* granted_bytes )
 {
-	if( requested_bytes == 0 )
-	{
-		if( current_ptr ) free( current_ptr );
-		current_ptr = NULL;
-		if( granted_bytes ) *granted_bytes = 0;
-	}
-	else
-	{
+    if( requested_bytes == 0 )
+    {
+        if( current_ptr ) free( current_ptr );
+        current_ptr = NULL;
+        if( granted_bytes ) *granted_bytes = 0;
+    }
+    else
+    {
         if( current_ptr )
         {
             current_ptr = realloc( current_ptr, requested_bytes );
@@ -402,7 +402,7 @@ static inline void* external_alloc( void* current_ptr, size_t requested_bytes, s
         }
         if( granted_bytes ) *granted_bytes = requested_bytes;
     }
-	return current_ptr;
+    return current_ptr;
 }
 
 // generalized alloc function purely based on stdlib
