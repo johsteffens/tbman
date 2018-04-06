@@ -41,7 +41,7 @@ in C and C++ code.
 
 <a name="anchor_build_requirements"></a>
 **Build requirements:**
-* Your C-comiler should support the C11 standard: `-std=c11`
+* Your C-compiler should support the C11 standard: `-std=c11`
 * Tbman uses the pthread library: `-lpthread`
 
 **C++:**
