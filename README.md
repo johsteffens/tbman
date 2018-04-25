@@ -71,7 +71,7 @@ For large memory requests, where pooling would be wasteful, tbman falls back to 
 ### Use in multi-threaded applications
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
-Concurrency is coverned by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous manager usage lock-contention time might be noticeable compared to single threaded usage.
+Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous manager usage lock-contention time might be noticeable compared to single threaded usage.
 
 ## Motivation
 This memory manager has been conceived and developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
