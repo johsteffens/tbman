@@ -23,6 +23,8 @@ in C and C++ code.
    * It has been tested on Intel and ARM platforms.
 
 ## How to use it
+* `git clone https://github.com/johsteffens/tbman.git`
+
 **Linux (or operating systems supporting POSIX):** Just follow suggestions below.
 
 **Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows). 
@@ -35,8 +37,7 @@ in C and C++ code.
 **Quick evaluation**:
 
 `eval.c` is an evaluation program simulating realistic runtime conditions for a memory manager. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
-   * Download this project.
-   * (Linux) Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
+   * Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 **In your workspace:**
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
