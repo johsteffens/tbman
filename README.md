@@ -1,5 +1,13 @@
 # Tbman - Fast and Easy Memory Manager
 
+# Table of Content
+   * [What it is](#anchor_what_it_is)
+   * [Benefits](#anchor_benefits)
+   * [How to use it](#anchor_how_to_use_it)
+   * [How it works](#anchor_how_it_works)
+   * [Motivation](#anchor_motivation)
+
+<a name="anchor_what_it_is"></a>
 ## What it is
 Tbman is a general-purpose memory manager offering (among others) these functions 
 
@@ -11,6 +19,7 @@ which can replace corresponding stdlib functions
 
 in C and C++ code.
 
+<a name="anchor_benefits"></a>
 ## Benefits
 * Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#anchor_quick_evaluation)
 * Automatic alignment even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
@@ -22,6 +31,7 @@ in C and C++ code.
    * It can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
    * It has been tested on Intel and ARM platforms.
 
+<a name="anchor_how_to_use_it"></a>
 ## How to use it
 * `git clone https://github.com/johsteffens/tbman.git`
 
@@ -72,6 +82,7 @@ You can use tbman in C++ code as follows:
     Here is a nice external article about overloading allocation operators:<br>
     http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
    
+<a name="anchor_how_it_works"></a>
 ## How it works
 Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
 
@@ -82,6 +93,7 @@ Tbman is thread safe: The interface functions can be called any time from any th
 
 Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous manager usage lock-contention time might be noticeable compared to single threaded usage.
 
+<a name="anchor_motivation"></a>
 ## Motivation
 This memory manager has been conceived and developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
 
