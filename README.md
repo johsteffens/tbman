@@ -23,6 +23,14 @@ in C and C++ code.
    * It has been tested on Intel and ARM platforms.
 
 ## How to use it
+**Linux (or operating systems supporting POSIX):** Just follow suggestions below.
+
+**Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows). 
+
+### Requirements/Dependencies
+   * gcc (or similar compiler suite) supporting the C11 standard.
+   * Library `pthread` of the POSIX.1c standard.
+
 <a name="anchor_quick_evaluation"></a>
 **Quick evaluation**:
 
