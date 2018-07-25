@@ -88,10 +88,15 @@ Tbman uses a "conservative" memory pooling approach with multiple token-based fi
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
 
-### Use in multi-threaded applications
+### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
 Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous manager usage lock-contention time might be noticeable compared to single threaded usage.
+
+### Mixing code using other memory managers
+Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems. 
+
+However, you can not manage the **same memeory instance** with a different manager. Meaning that you must use `tbman_free` or `tbman_realloc` on memory created with `tbman_malloc` or `tbman_realloc`. You can not use `free` or `realloc` on such an instance. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on memory created with `malloc`, `realloc`, `new` or any other non-tbman alloctor.
 
 <a name="anchor_motivation"></a>
 ## Motivation
