@@ -78,9 +78,16 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
 <a name="anchor_how_it_works"></a>
 ## How it works
-Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
+
+### Block-Pooling-Layer
+Tbman introduces a separate management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client requests or returns small ... medium sized memory instances, tbman dispatches/recollects pool memory. System requests are only executed to acquire new pool or return an empty one to the system. This offloads the system memory manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls.
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
+
+### Multiple Managers
+Tbman offers global management (one manager for everything). However, it is also possible to use multiple individual managers independently via the 'tbman_s' object. This is particularly helpful when you run multiple threads and want to reduce lock-contention by giving each thread its own manager. 
+
+For nearly every function `tbman_<something>( <some_args> )` there exists a corresponding function for an individual manager: `tbman_s_<something>( tbman_s* o, <some_args> )`.
 
 ### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
