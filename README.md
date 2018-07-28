@@ -68,12 +68,12 @@ in C and C++ code.
 In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.
 
 **Example:**
-    ```C++
-    void* operator new( size_t size ) { return tbman_malloc( size ); }
-    void operator detete( void* p ) { tbman_free( p ); }
-    ```
+```C++
+void* operator new( size_t size ) { return tbman_malloc( size ); }
+void operator detete( void* p ) { tbman_free( p ); }
+```
    
-Here is a nice external article about overloading allocation operators:<br>
+Here is an external article with more details about overloading allocation operators:<br>
 http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
 <a name="anchor_how_it_works"></a>
