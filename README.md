@@ -85,7 +85,7 @@ Tbman introduces a dedicated management layer using a "conservative" memory pool
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
 
 ### Multiple Managers
-Tbman offers global management (one manager for everything). It also offers multiple individual and independent managers via the `tbman_s` object. Each manager has its own lock. This is particularly helpful when you run multiple threads and want to reduce lock-contention by giving each thread its own manager. 
+Tbman offers global management (one manager for everything). It also offers multiple individual and independent managers via the `tbman_s` object. Each manager has its own mutex. This is particularly helpful when you run multiple threads and want to reduce lock-contention by giving each thread its own manager. 
 
 For most functions of type `tbman_<something>( <some_args> )`, there exists a corresponding function for a dedicated manager instance: `tbman_s_<something>( tbman_s* manager_instance, <some_args> )`.
 
