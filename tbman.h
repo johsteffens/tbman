@@ -45,11 +45,20 @@ tbman_s* tbman_s_create
             bool full_align          // true: uses full memory alignment (fastest)
          );
 
+/// Discards a dedicated manager
+void tbman_s_discard( tbman_s* o );
+
 /// opens global memory manager (call this once before first usage of global tbman functions below)
 void tbman_open( void );
 
 /// closes global memory manager (call this once at the end of your program)
 void tbman_close( void );
+
+/// creates a dedicated memory manager instance ( close with tbman_s_close )
+static inline tbman_s* tbman_s_open( void ) { return tbman_s_create_default(); }
+
+/// closes dedicated  memory manager instance
+static inline void tbman_s_close( tbman_s* o ) { tbman_s_discard( o ); }
 
 /**********************************************************************************************************************/
 /** Advanced memory management using the internal manager (thread-safe).
@@ -99,16 +108,30 @@ static inline void* tbman_malloc(             size_t size ) { return tbman_alloc
 static inline void* tbman_realloc( void* ptr, size_t size ) { return tbman_alloc( ptr,  size, NULL ); }
 static inline void  tbman_free(    void* ptr              ) {        tbman_alloc( ptr,  0,    NULL ); }
 
+static inline void* tbman_s_malloc(  tbman_s* o,            size_t size ) { return tbman_s_alloc( o, NULL, size, NULL ); }
+static inline void* tbman_s_realloc( tbman_s* o, void* ptr, size_t size ) { return tbman_s_alloc( o, ptr,  size, NULL ); }
+static inline void  tbman_s_free(    tbman_s* o, void* ptr              ) {        tbman_s_alloc( o, ptr,  0,    NULL ); }
+
 /// realloc, specifying current size (thread-safe).
 static inline void* tbman_nrealloc( void* current_ptr, size_t current_size, size_t new_size )
 {
     return tbman_nalloc( current_ptr, current_size, new_size, NULL );
 }
 
+static inline void* tbman_s_nrealloc( tbman_s* o, void* current_ptr, size_t current_size, size_t new_size )
+{
+    return tbman_s_nalloc( o, current_ptr, current_size, new_size, NULL );
+}
+
 /// free, specifying current size (thread-safe).
 static inline void tbman_nfree( void* current_ptr, size_t current_size )
 {
     tbman_nalloc( current_ptr, current_size, 0, NULL );
+}
+
+static inline void tbman_s_nfree( tbman_s* o, void* current_ptr, size_t current_size )
+{
+    tbman_s_nalloc( o, current_ptr, current_size, 0, NULL );
 }
 
 /// returns currently granted space for a specified memory instance (thread-safe)
@@ -120,8 +143,8 @@ size_t tbman_total_granted_space( void );
 size_t tbman_s_total_granted_space( tbman_s* o );
 
 /// prints internal status to stdout (use only for debugging/testing - not thread-safe)
-void print_tbman_s_status( tbman_s* o, int detail_level );
 void print_tbman_status(               int detail_level );
+void print_tbman_s_status( tbman_s* o, int detail_level );
 
 #ifdef __cplusplus
    }

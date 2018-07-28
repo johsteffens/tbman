@@ -666,7 +666,7 @@ void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static void* tbman_s_malloc( tbman_s* o, size_t requested_size, size_t* granted_size )
+static void* tbman_s_mem_alloc( tbman_s* o, size_t requested_size, size_t* granted_size )
 {
     block_manager_s* block_manager = NULL;
     for( size_t i = 0; i < o->size; i++ )
@@ -697,7 +697,7 @@ static void* tbman_s_malloc( tbman_s* o, size_t requested_size, size_t* granted_
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static void tbman_s_free( tbman_s* o, void* current_ptr, const size_t* current_size )
+static void tbman_s_mem_free( tbman_s* o, void* current_ptr, const size_t* current_size )
 {
     if( current_size && *current_size <= o->max_block_size && o->aligned )
     {
@@ -721,7 +721,7 @@ static void tbman_s_free( tbman_s* o, void* current_ptr, const size_t* current_s
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static void* tbman_s_realloc( tbman_s* o, void* current_ptr, const size_t* current_size, size_t requested_size, size_t* granted_size )
+static void* tbman_s_mem_realloc( tbman_s* o, void* current_ptr, const size_t* current_size, size_t requested_size, size_t* granted_size )
 {
     token_manager_s* token_manager = NULL;
     if( current_size && *current_size <= o->max_block_size && o->aligned )
@@ -738,7 +738,7 @@ static void* tbman_s_realloc( tbman_s* o, void* current_ptr, const size_t* curre
     {
         if( requested_size > token_manager->block_size )
         {
-            void* reserved_ptr = tbman_s_malloc( o, requested_size, granted_size );
+            void* reserved_ptr = tbman_s_mem_alloc( o, requested_size, granted_size );
             memcpy( reserved_ptr, current_ptr, token_manager->block_size );
             token_manager_s_free( token_manager, current_ptr );
             return reserved_ptr;
@@ -775,7 +775,7 @@ static void* tbman_s_realloc( tbman_s* o, void* current_ptr, const size_t* curre
     {
         if( requested_size <= o->max_block_size ) // new size fits into manager, old size was outside manager
         {
-            void* reserved_ptr = tbman_s_malloc( o, requested_size, granted_size );
+            void* reserved_ptr = tbman_s_mem_alloc( o, requested_size, granted_size );
             memcpy( reserved_ptr, current_ptr, requested_size );
             if( btree_ps_s_remove( o->external_btree, current_ptr ) != 1 ) ERR( "Attempt to free invalid memory" );
             free( current_ptr );
@@ -819,7 +819,7 @@ void* tbman_s_alloc( tbman_s* o, void* current_ptr, size_t requested_size, size_
     {
         if( current_ptr )
         {
-            tbman_s_free( o, current_ptr, NULL );
+            tbman_s_mem_free( o, current_ptr, NULL );
         }
         if( granted_size ) *granted_size = 0;
     }
@@ -827,11 +827,11 @@ void* tbman_s_alloc( tbman_s* o, void* current_ptr, size_t requested_size, size_
     {
         if( current_ptr )
         {
-            ret = tbman_s_realloc( o, current_ptr, NULL, requested_size, granted_size );
+            ret = tbman_s_mem_realloc( o, current_ptr, NULL, requested_size, granted_size );
         }
         else
         {
-            ret = tbman_s_malloc( o, requested_size, granted_size );
+            ret = tbman_s_mem_alloc( o, requested_size, granted_size );
         }
     }
     pthread_mutex_unlock( &o->mutex );
@@ -848,7 +848,7 @@ void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t
     {
         if( current_size ) // 0 means current_ptr may not be used for free or realloc
         {
-            tbman_s_free( o, current_ptr, &current_size );
+            tbman_s_mem_free( o, current_ptr, &current_size );
         }
         if( granted_size ) *granted_size = 0;
     }
@@ -856,11 +856,11 @@ void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t
     {
         if( current_size ) // 0 means current_ptr may not be used for free or realloc
         {
-            ret = tbman_s_realloc( o, current_ptr, &current_size, requested_size, granted_size );
+            ret = tbman_s_mem_realloc( o, current_ptr, &current_size, requested_size, granted_size );
         }
         else
         {
-            ret = tbman_s_malloc( o, requested_size, granted_size );
+            ret = tbman_s_mem_alloc( o, requested_size, granted_size );
         }
     }
     pthread_mutex_unlock( &o->mutex );
