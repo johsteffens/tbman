@@ -78,26 +78,33 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
 <a name="anchor_how_it_works"></a>
 ## How it works
-Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
+
+### Block-Pooling-Layer
+Tbman introduces a dedicated management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly. System requests are only executed to acquire new pool or return an empty pool. This offloads the system manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls particulary in programs where many small sized memory instances are used.
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
+
+### Multiple Managers
+Tbman offers global management (one manager for everything). It also offers multiple individual and independent managers via the `tbman_s` object. Each manager has its own lock. This is particularly helpful when you run multiple threads and want to reduce lock-contention by giving each thread its own manager. 
+
+For most functions of type `tbman_<something>( <some_args> )`, there exists a corresponding function for a dedicated manager instance: `tbman_s_<something>( tbman_s* manager_instance, <some_args> )`.
 
 ### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
-Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous manager usage lock-contention time might be noticeable compared to single threaded usage.
+Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous usage of the same manager lock-contention time might be noticeable compared to single threaded usage.
 
 ### Mixing code using other memory managers
 Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems.
 
 However, you can not manage the **same memory instance** with different managers. Meaning: You must use `tbman_free` or `tbman_realloc` on a memory instance allocated with `tbman_malloc` or `tbman_realloc`. You can not use `free` or `realloc` on such an instance. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc`, `new` or any other non-tbman allocator.
 
+Likewise, you can not manage the same memory instance with different tbman_s instances.
+
 <a name="anchor_motivation"></a>
 ## Motivation
-This memory manager has been conceived and developed for the project [beth](https://github.com/johsteffens/beth). It has reached sufficient maturity for general purpose and platform independent usage. We therefore created the spin-off-project [tbman](https://github.com/johsteffens/tbman) where the manager is offered as compact stand-alone solution.
+This memory manager has originally been conceived and developed for the project [beth](https://github.com/johsteffens/beth). For those interested in the manager but not keen on digesting the whole of project beth, we created this compact stand-alone solution as spin-off-project [tbman](https://github.com/johsteffens/tbman).
 
-
-
-Thanks for reading. I hope you will find it useful.
+Thanks for reading. If you find it useful, have questions or suggestions I'd be happy to hear from you.
 
 <sub>*Johannes Steffens*</sub>
