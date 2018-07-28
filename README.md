@@ -80,7 +80,7 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 ## How it works
 
 ### Block-Pooling-Layer
-Tbman introduces a separate management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client requests or returns small ... medium sized memory instances, tbman dispatches/recollects pool memory. System requests are only executed to acquire new pool or return an empty one to the system. This offloads the system memory manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls.
+Tbman introduces a dedicated management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly. System requests are only executed to acquire new pool or return an empty pool. This offloads the system manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls particulary in programs where many small sized memory instances are used.
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
 
