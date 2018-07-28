@@ -39,6 +39,10 @@ SOFTWARE.
 #ifndef BTREE_H
 #define BTREE_H
 
+#ifdef __cplusplus
+   extern "C" {
+#endif // __cplusplus
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -143,6 +147,9 @@ size_t btree_vd_s_count( const btree_vd_s* o, bool(*func)( void* arg, btree_vd_k
 /// return depth of tree
 size_t btree_vd_s_depth( const btree_vd_s* o );
 
+#ifdef __cplusplus
+   }
+#endif // __cplusplus
 
 #endif // BTREE_H
 

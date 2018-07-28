@@ -23,13 +23,17 @@ SOFTWARE.
 #ifndef TBMAN_H
 #define TBMAN_H
 
+#ifdef __cplusplus
+   extern "C" {
+#endif // __cplusplus
+
 #include <stddef.h>
 #include <stdbool.h>
 
 typedef struct tbman_s tbman_s;
 
 /// Creates a dedicated manager with default parameters
-tbman_s* tbman_s_create_default();
+tbman_s* tbman_s_create_default( void );
 
 /// Creates a dedicated manager with specified parameters (consider using tbman_s_create_default)
 tbman_s* tbman_s_create
@@ -42,10 +46,10 @@ tbman_s* tbman_s_create
          );
 
 /// opens global memory manager (call this once before first usage of global tbman functions below)
-void tbman_open();
+void tbman_open( void );
 
 /// closes global memory manager (call this once at the end of your program)
-void tbman_close();
+void tbman_close( void );
 
 /**********************************************************************************************************************/
 /** Advanced memory management using the internal manager (thread-safe).
@@ -107,12 +111,20 @@ static inline void tbman_nfree( void* current_ptr, size_t current_size )
     tbman_nalloc( current_ptr, current_size, 0, NULL );
 }
 
+/// returns currently granted space for a specified memory instance (thread-safe)
+size_t tbman_granted_space(               const void* current_ptr );
+size_t tbman_s_granted_space( tbman_s* o, const void* current_ptr );
+
 /// returns total of currently granted space (thread-safe)
-size_t tbman_granted_space( void );
-size_t tbman_s_granted_space( tbman_s* o );
+size_t tbman_total_granted_space( void );
+size_t tbman_s_total_granted_space( tbman_s* o );
 
 /// prints internal status to stdout (use only for debugging/testing - not thread-safe)
 void print_tbman_s_status( tbman_s* o, int detail_level );
 void print_tbman_status(               int detail_level );
+
+#ifdef __cplusplus
+   }
+#endif // __cplusplus
 
 #endif // TBMAN_H

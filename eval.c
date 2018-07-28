@@ -420,7 +420,7 @@ static inline void* tbman_nalloc_no_current_bytes( void* current_ptr, size_t cur
 void tbman_test( void )
 {
     size_t table_size = 100000;
-    size_t cycles     = 20;
+    size_t cycles     = 10;
     size_t max_alloc  = 65536;
     size_t seed       = 1237;
 

@@ -9,7 +9,7 @@
 
 <a name="anchor_what_it_is"></a>
 ## What it is
-Tbman is a general-purpose memory manager offering (among others) these functions 
+Tbman is a general-purpose memory manager offering (among others) these functions
 
 `tbman_malloc, tbman_free, tbman_realloc`,
 
@@ -26,7 +26,7 @@ in C and C++ code.
 * Reduced fragmentation of system memory.
 * Easy monitoring of total memory usage. *(E.g. for leak detection)*
 * Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
-* Platform independence: 
+* Platform independence:
    * The code adheres to the c11-standard.
    * It can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
    * It has been tested on Intel and ARM platforms.
@@ -37,7 +37,7 @@ in C and C++ code.
 
 **Linux (or operating systems supporting POSIX):** Just follow suggestions below.
 
-**Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows). 
+**Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows).
 
 ### Requirements/Dependencies
    * gcc (or similar compiler suite) supporting the C11 standard.
@@ -51,10 +51,10 @@ in C and C++ code.
 
 **In your workspace:**
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
-* In your code: 
+* In your code:
   * `#include "tbman.h"`
   * Call once `tbman_open();` at the beginning or your program. *(E.g. first in `main()`)*
-  * Use `tbman_*` - functions anywhere. 
+  * Use `tbman_*` - functions anywhere.
     <br><sub>Note: Do not mix stdlib and tbman alloc-functions for the same memory instance.</sub>
   * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`)*
 
@@ -65,15 +65,7 @@ in C and C++ code.
 
 **C++:**
 
-You can use tbman in C++ code as follows:
-* Include tbman.h as C-header:<br>
-  ```C++
-  extern "C"
-  {
-     #include "tbman.h"
-  }
-  ```
-* In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.<br>
+In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.<br>
 **Example:**
     ```C++
     void* operator new( size_t size ) { return tbman_malloc( size ); }
@@ -81,7 +73,7 @@ You can use tbman in C++ code as follows:
     ```
     Here is a nice external article about overloading allocation operators:<br>
     http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
-   
+
 <a name="anchor_how_it_works"></a>
 ## How it works
 Tbman uses a "conservative" memory pooling approach with multiple token-based fixed size block-managers at a strategic size-distribution. It pre-allocates only moderate amounts of memory and dymatically acquires more or releases back to the system as needed and/or suitable. Multiple pools are managed in a btree.
@@ -94,7 +86,7 @@ Tbman is thread safe: The interface functions can be called any time from any th
 Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous manager usage lock-contention time might be noticeable compared to single threaded usage.
 
 ### Mixing code using other memory managers
-Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems. 
+Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems.
 
 However, you can not manage the **same memory instance** with different managers. Meaning: You must use `tbman_free` or `tbman_realloc` on a memory instance allocated with `tbman_malloc` or `tbman_realloc`. You can not use `free` or `realloc` on such an instance. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc`, `new` or any other non-tbman allocator.
 

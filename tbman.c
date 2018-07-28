@@ -58,6 +58,10 @@ static void ext_err( const char* func, const char* file, int line, const char* f
 
 #define ERR( ... ) ext_err( __func__, __FILE__, __LINE__, __VA_ARGS__ )
 
+
+#define ASSERT_GLOBAL_INITIALIZED() \
+ if( tbman_s_g == NULL ) ERR( "Manager was not initialized. Call tbman_open() at the beginning of your program." )
+
 /**********************************************************************************************************************/
 
 static inline void* stdlib_alloc( void* current_ptr, size_t requested_size )
@@ -116,15 +120,20 @@ typedef struct token_manager_s
     uint16_t token_stack[]; // stack of block-tokens (part of pool)
 } token_manager_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_init( token_manager_s* o )
 {
     memset( o, 0, sizeof( *o ) );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_down( token_manager_s* o )
 {
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static token_manager_s* token_manager_s_create( size_t pool_size, size_t block_size, bool align )
 {
@@ -157,6 +166,8 @@ static token_manager_s* token_manager_s_create( size_t pool_size, size_t block_s
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_discard( token_manager_s* o )
 {
     if( !o ) return;
@@ -164,15 +175,21 @@ static void token_manager_s_discard( token_manager_s* o )
     free( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bool token_manager_s_is_full( token_manager_s* o )
 {
     return o->token_stack[ o->stack_index ] == 0;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bool token_manager_s_is_empty( token_manager_s* o )
 {
     return o->stack_index == 0;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void* token_manager_s_alloc( token_manager_s* o )
 {
@@ -182,6 +199,8 @@ static void* token_manager_s_alloc( token_manager_s* o )
     o->stack_index++;
     return ret;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // forward declarations (implementation below)
 static void block_manager_s_full_to_free( struct block_manager_s* o, token_manager_s* child );
@@ -209,15 +228,21 @@ static void token_manager_s_free( token_manager_s* o, void* ptr )
     if( o->stack_index == 0 ) block_manager_s_free_to_empty( o->parent, o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t token_manager_s_total_alloc( const token_manager_s* o )
 {
     return o->block_size * o->stack_index;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t token_manager_s_total_space( const token_manager_s* o )
 {
     return o->pool_size + o->stack_size * sizeof( uint16_t );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void print_token_manager_s_status( const token_manager_s* o, int detail_level )
 {
@@ -230,6 +255,8 @@ void print_token_manager_s_status( const token_manager_s* o, int detail_level )
     printf( "    total alloc: %zu\n", token_manager_s_total_alloc( o ) );
     printf( "    total space: %zu\n", token_manager_s_total_space( o ) );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -272,12 +299,16 @@ typedef struct block_manager_s
     btree_vd_s* internal_btree;
 } block_manager_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void block_manager_s_init( block_manager_s* o )
 {
     memset( o, 0, sizeof( *o ) );
     o->aligned = true;
     o->sweep_hysteresis = 0.125;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void block_manager_s_down( block_manager_s* o )
 {
@@ -290,6 +321,8 @@ static void block_manager_s_down( block_manager_s* o )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static block_manager_s* block_manager_s_create( size_t pool_size, size_t block_size, bool align )
 {
     block_manager_s* o = malloc( sizeof( block_manager_s ) );
@@ -301,12 +334,16 @@ static block_manager_s* block_manager_s_create( size_t pool_size, size_t block_s
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void block_manager_s_discard( block_manager_s* o )
 {
     if( !o ) return;
     block_manager_s_down( o );
     free( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child );
 
@@ -346,6 +383,8 @@ static void* block_manager_s_alloc( block_manager_s* o )
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 // A child reports turning full --> free
 static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* child )
 {
@@ -364,6 +403,8 @@ static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* c
     swapc->parent_index = child_index;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t block_manager_s_empty_tail( const block_manager_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -371,6 +412,8 @@ static size_t block_manager_s_empty_tail( const block_manager_s* o )
     while( empty_index > 0 && token_manager_s_is_empty( o->data[ empty_index - 1 ] ) ) empty_index--;
     return o->size - empty_index;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // A child reports turning free --> empty
 static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* child )
@@ -410,6 +453,8 @@ static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t block_manager_s_total_alloc( const block_manager_s* o )
 {
     size_t sum = 0;
@@ -420,6 +465,8 @@ static size_t block_manager_s_total_alloc( const block_manager_s* o )
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t block_manager_s_total_space( const block_manager_s* o )
 {
     size_t sum = 0;
@@ -429,6 +476,8 @@ static size_t block_manager_s_total_space( const block_manager_s* o )
     }
     return sum;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void print_block_manager_s_status( const block_manager_s* o, int detail_level )
 {
@@ -451,6 +500,8 @@ static void print_block_manager_s_status( const block_manager_s* o, int detail_l
         }
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -485,6 +536,8 @@ typedef struct tbman_s
     btree_ps_s* external_btree;
     pthread_mutex_t mutex;
 } tbman_s;
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void tbman_s_init( tbman_s* o, size_t pool_size, size_t min_block_size, size_t max_block_size, size_t stepping_method, bool full_align )
 {
@@ -546,6 +599,8 @@ void tbman_s_init( tbman_s* o, size_t pool_size, size_t min_block_size, size_t m
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void tbman_s_down( tbman_s* o )
 {
     pthread_mutex_lock( &o->mutex );
@@ -562,6 +617,8 @@ void tbman_s_down( tbman_s* o )
     pthread_mutex_destroy( &o->mutex );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 tbman_s* tbman_s_create
          (
             size_t pool_size,
@@ -577,7 +634,9 @@ tbman_s* tbman_s_create
     return o;
 }
 
-tbman_s* tbman_s_create_default()
+// ---------------------------------------------------------------------------------------------------------------------
+
+tbman_s* tbman_s_create_default( void )
 {
     return tbman_s_create
     (
@@ -589,6 +648,8 @@ tbman_s* tbman_s_create_default()
     );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void tbman_s_discard( tbman_s* o )
 {
     if( !o ) return;
@@ -596,10 +657,14 @@ void tbman_s_discard( tbman_s* o )
     free( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child )
 {
     o->aligned = false;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void* tbman_s_malloc( tbman_s* o, size_t requested_size, size_t* granted_size )
 {
@@ -630,6 +695,8 @@ static void* tbman_s_malloc( tbman_s* o, size_t requested_size, size_t* granted_
     return reserved_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_free( tbman_s* o, void* current_ptr, const size_t* current_size )
 {
     if( current_size && *current_size <= o->max_block_size && o->aligned )
@@ -651,6 +718,8 @@ static void tbman_s_free( tbman_s* o, void* current_ptr, const size_t* current_s
         }
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void* tbman_s_realloc( tbman_s* o, void* current_ptr, const size_t* current_size, size_t requested_size, size_t* granted_size )
 {
@@ -740,6 +809,8 @@ static void* tbman_s_realloc( tbman_s* o, void* current_ptr, const size_t* curre
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void* tbman_s_alloc( tbman_s* o, void* current_ptr, size_t requested_size, size_t* granted_size )
 {
     pthread_mutex_lock( &o->mutex );
@@ -766,6 +837,8 @@ void* tbman_s_alloc( tbman_s* o, void* current_ptr, size_t requested_size, size_
     pthread_mutex_unlock( &o->mutex );
     return ret;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size )
 {
@@ -794,10 +867,14 @@ void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t tbman_s_total_external_alloc( const tbman_s* o )
 {
     return btree_ps_s_sum( o->external_btree, NULL, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static size_t tbman_s_total_internal_alloc( const tbman_s* o )
 {
@@ -809,11 +886,15 @@ static size_t tbman_s_total_internal_alloc( const tbman_s* o )
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t tbman_s_total_alloc( const tbman_s* o )
 {
     return tbman_s_total_external_alloc( o )
          + tbman_s_total_internal_alloc( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static size_t tbman_s_total_space( const tbman_s* o )
 {
@@ -825,10 +906,14 @@ static size_t tbman_s_total_space( const tbman_s* o )
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // Global manager
 
 static tbman_s* tbman_s_g = NULL;
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void create_tbman()
 {
@@ -842,37 +927,79 @@ static void create_tbman()
     );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void discard_tbman()
 {
     tbman_s_discard( tbman_s_g );
     tbman_s_g = NULL;
 }
 
-void tbman_open()
+// ---------------------------------------------------------------------------------------------------------------------
+
+void tbman_open( void )
 {
     static pthread_once_t flag = PTHREAD_ONCE_INIT;
     int ern = pthread_once( &flag, create_tbman );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void tbman_close()
+// ---------------------------------------------------------------------------------------------------------------------
+
+void tbman_close( void )
 {
     discard_tbman();
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size )
 {
-    assert( tbman_s_g != NULL );
+    ASSERT_GLOBAL_INITIALIZED();
     return tbman_s_alloc( tbman_s_g, current_ptr, requested_size, granted_size );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size )
 {
-    assert( tbman_s_g != NULL );
+    ASSERT_GLOBAL_INITIALIZED();
     return tbman_s_nalloc( tbman_s_g, current_ptr, current_size, requested_size, granted_size );
 }
 
-size_t tbman_s_granted_space( tbman_s* o )
+// ---------------------------------------------------------------------------------------------------------------------
+
+size_t tbman_s_granted_space( tbman_s* o, const void* current_ptr )
+{
+    token_manager_s* token_manager = NULL;
+    {
+        void* block_ptr = btree_vd_s_largest_below_equal( o->internal_btree, ( void* )current_ptr );
+        if( block_ptr && ( ( ( uint8_t* )current_ptr - ( uint8_t* )block_ptr ) < o->pool_size ) ) token_manager = block_ptr;
+    }
+
+    if( token_manager )
+    {
+        return token_manager->block_size;
+    }
+    else
+    {
+        size_t* p_current_size = btree_ps_s_val( o->external_btree, ( void* )current_ptr );
+        if( !p_current_size ) return 0;
+        return *p_current_size;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+size_t tbman_granted_space( const void* current_ptr )
+{
+    ASSERT_GLOBAL_INITIALIZED();
+    return tbman_s_granted_space( tbman_s_g, current_ptr );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+size_t tbman_s_total_granted_space( tbman_s* o )
 {
     pthread_mutex_lock( &o->mutex );
     size_t space = tbman_s_total_alloc( o );
@@ -880,11 +1007,15 @@ size_t tbman_s_granted_space( tbman_s* o )
     return space;
 }
 
-size_t tbman_granted_space()
+// ---------------------------------------------------------------------------------------------------------------------
+
+size_t tbman_total_granted_space( void )
 {
-    assert( tbman_s_g != NULL );
-    return tbman_s_granted_space( tbman_s_g );
+    ASSERT_GLOBAL_INITIALIZED();
+    return tbman_s_total_granted_space( tbman_s_g );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // not thread-safe
 void print_tbman_s_status( tbman_s* o, int detail_level )
@@ -912,7 +1043,11 @@ void print_tbman_s_status( tbman_s* o, int detail_level )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void print_tbman_status( int detail_level )
 {
     print_tbman_s_status( tbman_s_g, detail_level );
 }
+
+/**********************************************************************************************************************/
