@@ -5,7 +5,17 @@
    * [Benefits](#anchor_benefits)
    * [How to use it](#anchor_how_to_use_it)
    * [Features](#anchor_features)
+      * [Basic](#anchor_basic)
+      * [Faster collection](#anchor_faster_collection)
+      * [One function for everything](#anchor_one_function_for_everything)
+      * [Automatic Alignment](#anchor_automatic_alignment)
+      * [Granted Amount](#anchor_granted_amount)
+      * [Memory Tracking](#anchor_memory_tracking)
+      * [Multiple Managers](#anchor_multiple_managers)
    * [How it works](#anchor_how_it_works)
+      * [Block-Pooling-Layer](#anchor_block-pooling-layer)
+      * [Thread safety](#anchor_thread_safety)
+      * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
    * [Motivation](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
@@ -102,7 +112,7 @@ void  tbman_nfree(    void* current_ptr, size_t current_size );
 `current_size` must hold either the requested amount or the [granted amount](#anchor_granted_amount) for the memory instance addressed by `current_ptr`.
 
 <a name="anchor_one_function_for_everything"></a>
-### One Function for Everything
+### One function for everything
 Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman. (For more details, see inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/master/tbman.h)).
 
 ```C 
@@ -144,8 +154,8 @@ my_function_that_should_never_leak( arg1, arg2, arg3 );
 size_t memory_leak = tbman_total_granted_space() - prior_space;
 if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
 ```
-<a name="anchor_dedicated_managers"></a>
-### Dedicated Managers
+<a name="anchor_multiple_managers"></a>
+### Multiple Managers
 Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in multiple threads to reduce lock-contention by giving each thread its own manager. 
 
 For each of above functions `tbman_` there exists a corresponding function with postfix `_s` meant for a dedicated manager instance. Except `tbman_s_open`, all functions `tbman_s_` take as first argument the reference to the dedicated manager instance.
