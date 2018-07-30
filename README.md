@@ -98,11 +98,11 @@ void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_siz
 ```
 
 ### Automatic Alignment
-When requesting memory of size n\*m when n is a positive integer and m is the highest possible power of 2, then the returned memory is aligned to the lesser of m and 'BCORE_TBMAN_ALIGN'. In practice this means that if you allocate an array of data type `mytype` with `sizeof( mytype )` being a power or two and <= BCORE_TBMAN_ALIGN then all elements of the array are aligned to `sizeof( mytype )`. This is very helpful when your code uses SIMD vectorization and expects data alignment.
+When requesting memory of size n\*m when n is a positive integer and m is the highest possible power of 2, then the returned memory is aligned to the lesser of m and 'TBMAN_ALIGN'. In practice this means that if you allocate an array of data type `mytype` with `sizeof( mytype )` being a power or two and <= TBMAN_ALIGN then all elements of the array are aligned to `sizeof( mytype )`. This is very helpful when your code uses SIMD vectorization and expects proper data alignment.
 
 
 ### Granted Amount
-Tbman might grant more memory than requested. In that case the granted amount can be considered allocated. This can be utilized for example in dynamic arrays. 
+Tbman never grants less than requested but it might grant more. In that case the granted amount can be considered allocated. This can be utilized for example in dynamic arrays. 
 
    * Query for the granted amount for an existing memory instance:
 ```C 
