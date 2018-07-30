@@ -80,6 +80,7 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 <a name="anchor_features"></a>
 ## Features
 
+<a name="anchor_basic"></a>
 ### Basic
 Tbman offers the basic three functions of a memory manager:
 ```C
@@ -90,7 +91,18 @@ void  tbman_free(    void* ptr              );
 Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
 <br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
 
-### One function for everything
+<a name="anchor_faster_collection"></a>
+### Faster collection
+If you free or reallocate memory and know the previoulsy allocated amount, you can further speed up processing by telling tbman about the currently allocated size using `_nrealloc` for `_realloc` and `_nfree` for `_free`. This helps the manager finding the corresponding node for the memory instance.
+
+```C
+void* tbman_nrealloc( void* current_ptr, size_t current_size, size_t new_size );
+void  tbman_nfree(    void* current_ptr, size_t current_size );
+```
+`current_size` must hold either the requested amount or the [granted amount](#anchor_granted_amount) for the memory instance addressed by `current_ptr`.
+
+<a name="anchor_one_function_for_everything"></a>
+### One Function for Everything
 Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman. (For more details, see inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/master/tbman.h)).
 
 ```C 
@@ -98,10 +110,12 @@ void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_siz
 void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size );
 ```
 
+<a name="anchor_automatic_alignment"></a>
 ### Automatic Alignment
 When requesting memory of size n\*m when n is a positive integer and m is the highest possible power of 2, then the returned memory is aligned to the lesser of m and `TBMAN_ALIGN`. In practice this means that if you allocate an array of data type `mytype` with `sizeof( mytype )` being a power or two and <= `TBMAN_ALIGN` then all elements of the array are aligned to `sizeof( mytype )`. This is very helpful when your code uses SIMD vectorization and expects proper data alignment.
 
 
+<a name="anchor_granted_amount"></a>
 ### Granted Amount
 Tbman never grants less than requested but it might grant more. In that case the granted amount can be considered allocated. This can be utilized for example in dynamic arrays. 
 
@@ -115,7 +129,8 @@ size_t tbman_granted_space( const void* ptr );
 void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
 ```
 
-### Total allocated memory
+<a name="anchor_memory_tracking"></a>
+### Memory Tracking
 You can query the total of tbman-allocated memory at any point in your program. The following function does this:
 ```C 
 size_t tbman_total_granted_space( void );
@@ -129,7 +144,8 @@ my_function_that_should_never_leak( arg1, arg2, arg3 );
 size_t memory_leak = tbman_total_granted_space() - prior_space;
 if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
 ```
-### Dedicated managers
+<a name="anchor_dedicated_managers"></a>
+### Dedicated Managers
 Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in multiple threads to reduce lock-contention by giving each thread its own manager. 
 
 For each of above functions `tbman_` there exists a corresponding function with postfix `_s` meant for a dedicated manager instance. Except `tbman_s_open`, all functions `tbman_s_` take as first argument the reference to the dedicated manager instance.
@@ -145,17 +161,20 @@ tbman_s_close( mman ); // closes a dedicated manager
 <a name="anchor_how_it_works"></a>
 ## How it works
 
+<a name="anchor_block-pooling-layer"></a>
 ### Block-Pooling-Layer
 Tbman introduces a dedicated management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently to acquire new pool or return an empty pool. This offloads the system manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls particularly in programs where many small sized memory instances are used.
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
 
+<a name="anchor_thread_safety"></a>
 ### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
 Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous usage of the same manager lock-contention time might be noticeable compared to single threaded usage.
 
-### Mixing code using other memory managers
+<a name="anchor_mixing_different_memory_managers"></a>
+### Mixing different memory managers
 Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems.
 
 However, you can not manage the **same memory instance** with different managers. Meaning: You must use `tbman_free` or `tbman_realloc` on a memory instance allocated with `tbman_malloc` or `tbman_realloc`. You can not use `free` or `realloc` on such an instance. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc`, `new` or any other non-tbman allocator.
