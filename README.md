@@ -134,9 +134,11 @@ int32x4_t my_data = tbman_malloc( sizeof( int32x4_t ) * 10 ); // aligned array o
 
 <a name="anchor_granted_amount"></a>
 ### Granted Amount
-Tbman never grants less than requested but it might grant more. In that case the granted amount can be considered allocated. This can be utilized for example in dynamic arrays. 
+For design reasons tbman might find no proper use for some space immediately behind your requested memory block. In that case it grants you that extra space as well and you may use it as if you requested a larger block size. *(Note: Tbman never grants less than requested.)* 
 
-   * Query for the granted amount for an existing memory instance:
+Knowing about the the granted amount can be useful e.g. when optimizing the behavior of dynamic arrays. The following functions communicate the granted amount:
+
+   * Explicit query for the granted amount for an already existing memory instance:
 ```C 
 size_t tbman_granted_space( const void* ptr );
 ```
