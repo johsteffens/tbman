@@ -116,11 +116,11 @@ void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_siz
 ```
 
 ### Total allocated memory
-You can query the total of all allocated memory at any point in your program. The following function does this:
+You can query the total of tbman-allocated memory at any point in your program. The following function does this:
 ```C 
 size_t tbman_total_granted_space( void );
 ```
-This can be helpful to asses the total memory footprint and for leak detection.
+This can be helpful to asses the memory footprint of your code and for leak detection.
 
 **Example:**
 ```C 
