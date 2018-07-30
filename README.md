@@ -33,11 +33,11 @@ in C and C++ code.
 <a name="anchor_benefits"></a>
 ## Benefits
 * Very fast. [*You can quickly verify this yourself.*](#anchor_quick_evaluation)
-* Automatic alignment even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
+* [Automatic alignment](#anchor_automatic_alignment) even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
 * Fewer system calls.
 * Low fragmentation of system memory.
-* Easy monitoring of total memory usage. *(E.g. for leak detection)*
-* Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
+* [Easy monitoring](#anchor_memory_tracking) of total memory usage. *(E.g. for leak detection)*
+* Optional communicaton of [actually granted amounts](#anchor_granted_amount). *(Useful for dynamic arrays)*
 * Platform independence:
    * The code adheres to the c11-standard.
    * It can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
