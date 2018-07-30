@@ -34,6 +34,7 @@ in C and C++ code.
 ## Benefits
 * Very fast. [*You can quickly verify this yourself.*](#anchor_quick_evaluation)
 * Automatic alignment even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
+* Fewer system calls.
 * Low fragmentation of system memory.
 * Easy monitoring of total memory usage. *(E.g. for leak detection)*
 * Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
