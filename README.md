@@ -4,6 +4,7 @@
    * [What it is](#anchor_what_it_is)
    * [Benefits](#anchor_benefits)
    * [How to use it](#anchor_how_to_use_it)
+   * [Features](#anchor_features)
    * [How it works](#anchor_how_it_works)
    * [Motivation](#anchor_motivation)
 
@@ -21,9 +22,9 @@ in C and C++ code.
 
 <a name="anchor_benefits"></a>
 ## Benefits
-* Generally faster than stdlib functions. [*You can quickly verify this yourself.*](#anchor_quick_evaluation)
+* Very fast. [*You can quickly verify this yourself.*](#anchor_quick_evaluation)
 * Automatic alignment even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
-* Reduced fragmentation of system memory.
+* Low fragmentation of system memory.
 * Easy monitoring of total memory usage. *(E.g. for leak detection)*
 * Optional communicaton of actually granted amounts. *(Useful for dynamic arrays)*
 * Platform independence:
@@ -76,18 +77,77 @@ void operator detete( void* p ) { tbman_free( p ); }
 Here is an external article with more details about overloading allocation operators:<br>
 http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
+<a name="anchor_features"></a>
+## Features
+
+### Basic
+Tbman offers the basic three functions of a memory manager:
+   * `tbman_malloc`
+   * `tbman_free`
+   * `tbman_realloc`
+
+Arguments, usage and general behavior is compatible to C11 stdlib functions `malloc`, `free`, `realloc`.
+<br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
+
+### One function for everything
+Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman. (For more details, see inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/master/tbman.h)).
+
+```C 
+void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
+void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size );
+```
+
+### Automatic Alignment
+When requesting memory of size n\*m when n is a positive integer and m is the highest possible power of 2, then the returned memory is aligned to the lesser of m and 'BCORE_TBMAN_ALIGN'. In practice this means that if you allocate an array of data type `mytype` with `sizeof( mytype )` being a power or two and <= BCORE_TBMAN_ALIGN then all elements of the array are aligned to `sizeof( mytype )`. This is very helpful when your code uses SIMD vectorization and expects data alignment.
+
+
+### Granted Amount
+Tbman might grant more memory than requested. In that case the granted amount can be considered allocated. This can be utilized for example in dynamic arrays. 
+
+   * Query for the granted amount for an existing memory instance:
+```C 
+size_t tbman_granted_space( const void* ptr );
+```
+
+   * Allocation with granted amount communicated. (For more details, see inline documentation for `tbman_alloc` in [`tbman.h`](https://github.com/johsteffens/tbman/blob/master/tbman.h)).
+```C 
+void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
+```
+
+### Total allocated memory
+You can query the total of all allocated memory at any point in your program. The following function does this:
+```C 
+size_t tbman_total_granted_space( void );
+```
+This can be helpful to asses the total memory footprint and for leak detection.
+
+**Example:**
+```C 
+size_t prior_space = tbman_total_granted_space();
+my_function_that_should_never_leak( arg1, arg2, arg3 );
+size_t memory_leak = tbman_total_granted_space() - prior_space;
+if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
+```
+### Dedicated managers
+Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in multiple threads to reduce lock-contention by giving each thread its own manager. 
+
+For each of above functions `tbman_` there exists a corresponding function with postfix `_s` meant for a dedicated manager instance. Except `tbman_s_open`, all functions `tbman_s_` take as first argument the reference to the dedicated manager instance.
+
+**Example:**
+```C 
+tbman_s* my_man = tbman_s_open(); // opens a dedicated manager
+char* my_memory = tbman_s_malloc( my_man, 1024 );
+... // do something else
+tbman_s_free( my_man, my_memory );  
+tbman_s_close( mman ); // closes a dedicated manager
+```
 <a name="anchor_how_it_works"></a>
 ## How it works
 
 ### Block-Pooling-Layer
-Tbman introduces a dedicated management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly. System requests are only executed to acquire new pool or return an empty pool. This offloads the system manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls particulary in programs where many small sized memory instances are used.
+Tbman introduces a dedicated management layer using a "conservative" memory pooling with multiple token-based fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly. System requests are only executed to acquire new pool or return an empty pool. This offloads the system manager significantly and can speed up overall processing and/or reduce fragmentation compared to always using system calls particularly in programs where many small sized memory instances are used.
 
 For large memory requests, where pooling would be wasteful, tbman falls back to using direct system calls. However, it keeps track of all memory.
-
-### Multiple Managers
-Tbman offers global management (one manager for everything). It also offers multiple individual and independent managers via the `tbman_s` object. Each manager has its own mutex. This is particularly helpful when you run multiple threads and want to reduce lock-contention by giving each thread its own manager. 
-
-For most functions of type `tbman_<something>( <some_args> )`, there exists a corresponding function for a dedicated manager instance: `tbman_s_<something>( tbman_s* manager_instance, <some_args> )`.
 
 ### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
@@ -99,7 +159,7 @@ Tbman does not affect the behavior of other memory managers (such as `malloc`, `
 
 However, you can not manage the **same memory instance** with different managers. Meaning: You must use `tbman_free` or `tbman_realloc` on a memory instance allocated with `tbman_malloc` or `tbman_realloc`. You can not use `free` or `realloc` on such an instance. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc`, `new` or any other non-tbman allocator.
 
-Likewise, you can not manage the same memory instance with different tbman_s instances.
+Likewise, you can not manage the same memory instance with different dedicated managers.
 
 <a name="anchor_motivation"></a>
 ## Motivation
