@@ -93,7 +93,7 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
 <a name="anchor_basic"></a>
 ### Basic
-Tbman offers the basic three functions of a memory manager:
+Tbman offers the three basic functions of a memory manager:
 ```C
 void* tbman_malloc(             size_t size );
 void* tbman_realloc( void* ptr, size_t size );
