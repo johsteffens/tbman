@@ -198,7 +198,7 @@ Tbman does not affect the behavior of other memory managers (such as `malloc`, `
 
 However, you can not manage the **same memory instance** with different managers. Meaning: You must use `tbman_free` or `tbman_realloc` on a memory instance allocated with `tbman_malloc` or `tbman_realloc`. You can not use `free` or `realloc` on such an instance. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc`, `new` or any other non-tbman allocator.
 
-Likewise, you can not manage the same memory instance with different dedicated managers.
+Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
 
 <a name="anchor_motivation"></a>
 ## Motivation
