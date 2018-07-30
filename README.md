@@ -36,7 +36,7 @@ in C and C++ code.
 ## How to use it
 * `git clone https://github.com/johsteffens/tbman.git`
 
-**Linux (or operating systems supporting POSIX):** Just follow suggestions below.
+**Operating systems supporting POSIX: (e.g. Linux, Android, Darwin, ... )** Just follow suggestions below.
 
 **Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows).
 
