@@ -82,11 +82,12 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
 ### Basic
 Tbman offers the basic three functions of a memory manager:
-   * `tbman_malloc`
-   * `tbman_free`
-   * `tbman_realloc`
-
-Arguments, usage and general behavior is compatible to C11 stdlib functions `malloc`, `free`, `realloc`.
+```C
+void* tbman_malloc(             size_t size );
+void* tbman_realloc( void* ptr, size_t size );
+void  tbman_free(    void* ptr              );
+```
+Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
 <br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
 
 ### One function for everything
