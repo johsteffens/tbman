@@ -170,7 +170,7 @@ tbman_s* my_man = tbman_s_open(); // opens a dedicated manager
 char* my_memory = tbman_s_malloc( my_man, 1024 );
 ... // do something else
 tbman_s_free( my_man, my_memory );  
-tbman_s_close( mman ); // closes a dedicated manager
+tbman_s_close( my_man ); // closes a dedicated manager
 ```
 <a name="anchor_how_it_works"></a>
 ## How it works
