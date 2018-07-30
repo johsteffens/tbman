@@ -161,7 +161,7 @@ This can be helpful to asses the memory footprint of your code and for leak dete
 **Example:**
 ```C 
 size_t prior_space = tbman_total_granted_space();
-my_function_that_should_never_leak( arg1, arg2, arg3 );
+my_never_leaking_function( arg1, arg2, arg3 );
 size_t memory_leak = tbman_total_granted_space() - prior_space;
 if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
 ```
