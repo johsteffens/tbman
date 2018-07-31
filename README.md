@@ -157,11 +157,11 @@ void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_siz
 size_t my_string_size = 5;
 char* my_string = tbman_alloc( NULL, my_string_size, &my_string_size );
 // at this point my_sring_size can be larger 5. Using that extra space is ok.
-for( size_t i = 0; i < 5; i++ )  my_string[ i ] = '=';
-for( size_t i = 5; i < my_string_size; i++ ) my_string[ i ] = '#';
+for( size_t i = 0; i < 4; i++ )  my_string[ i ] = '=';
+for( size_t i = 4; i < my_string_size - 1; i++ ) my_string[ i ] = '#';
 my_string[ my_string_size - 1 ] = 0;
 printf( "%s\n", my_string );
-// Possible output: =====##
+// Possible output: ====###
 ```
 
 <a name="anchor_memory_tracking"></a>
