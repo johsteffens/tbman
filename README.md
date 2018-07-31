@@ -52,8 +52,10 @@ in C and C++ code.
 **Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows).
 
 ### Requirements/Dependencies
-   * gcc (or similar compiler suite) supporting the C11 standard.
+   * gcc, clang or similar compiler suite supporting the C11 standard.
    * Library `pthread` of the POSIX.1c standard.
+   * Compiler options: -std=c11 -O3
+   * Linker options: -lm -lpthread
 
 <a name="anchor_quick_evaluation"></a>
 **Quick evaluation**:
