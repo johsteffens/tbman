@@ -51,19 +51,14 @@ in C and C++ code.
 
 **Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows).
 
+<a name="anchor_build_requirements"></a>
 ### Requirements/Dependencies
    * gcc, clang or similar compiler suite supporting the C11 standard.
    * Library `pthread` of the POSIX.1c standard.
    * Compiler options: `-std=c11 -O3`
    * Linker options: `-lm -lpthread`
 
-<a name="anchor_quick_evaluation"></a>
-**Quick evaluation**:
-
-`eval.c` is an evaluation program simulating realistic runtime conditions for a memory manager. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
-   * Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
-
-**In your workspace:**
+### In your workspace
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
 * In your code:
   * `#include "tbman.h"`
@@ -72,13 +67,7 @@ in C and C++ code.
     <br><sub>Note: Do not mix stdlib and tbman alloc-functions for the same memory instance.</sub>
   * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`)*
 
-<a name="anchor_build_requirements"></a>
-**Build requirements:**
-* Your C-compiler should support the C11 standard: `-std=c11`
-* Tbman uses the pthread library: `-lpthread`
-
-**C++:**
-
+### C++
 In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.
 
 **Example:**
@@ -89,6 +78,12 @@ void operator detete( void* p ) { tbman_free( p ); }
    
 Here is an external article with more details about overloading allocation operators:<br>
 http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
+
+<a name="anchor_quick_evaluation"></a>
+### Quick evaluation
+
+`eval.c` is an evaluation program simulating realistic runtime conditions for a memory manager. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
+   * Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 <a name="anchor_features"></a>
 ## Features
