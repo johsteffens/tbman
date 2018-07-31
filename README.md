@@ -141,7 +141,7 @@ int32x4_t my_data = tbman_malloc( sizeof( int32x4_t ) * 10 ); // aligned array o
 For design reasons tbman might find no proper use for some space immediately following your requested memory block. In that case it grants you that extra space as well and you may use it as if you requested a larger block size. 
 <br><sub>*(Note: Tbman never grants less than requested.)*</sub>
 
-Knowing about the the granted amount can be useful e.g. when optimizing the behavior of dynamic arrays. The following functions communicate the granted amount:
+Knowing about the the granted amount can be useful e.g. when optimizing the behavior of dynamic arrays. The following functions communicate the granted amount in bytes:
 
    * Explicit query for the granted amount for an already existing memory instance:
 ```C 
@@ -151,6 +151,17 @@ size_t tbman_granted_space( const void* ptr );
    * Allocation with granted amount communicated. (For more details, see inline documentation for `tbman_alloc` in [`tbman.h`](https://github.com/johsteffens/tbman/blob/947a88c820943c9902e572cb0c301f75daaae45e/tbman.h#L101)).
 ```C 
 void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
+```
+**Example:**
+```C 
+size_t my_string_size = 5;
+char* my_string = tbman_alloc( NULL, my_string_size, &my_string_size );
+// at this point my_sring_size can be larger 5. Using that extra space is ok.
+for( size_t i = 0; i < 5; i++ )  my_string[ i ] = '=';
+for( size_t i = 5; i < my_string_size; i++ ) my_string[ i ] = '#';
+my_string[ my_string_size - 1 ] = 0;
+printf( "%s\n", my_string );
+// Possible output: =====##
 ```
 
 <a name="anchor_memory_tracking"></a>
