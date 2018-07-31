@@ -200,7 +200,7 @@ Concurrency is governed by a mutex. This means that memory management is not loc
 ### Mixing different memory managers
 Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems.
 
-However, you can not manage the **same memory instance** with different managers. Meaning: You can not use `free` or `realloc` on a memory instance which was allocated with `tbman_malloc` or `tbman_realloc`. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc`, `new` or any other non-tbman allocator.
+However, you can not manage the **same memory instance** with different managers. Meaning: You can not use `free` or `realloc` on a memory instance which was allocated with `tbman_malloc` or `tbman_realloc`. The opposite applies too: You can not use `tbman_free` or `tbman_realloc` on a memory instance allocated with `malloc`, `realloc` or any other non-tbman allocator.
 
 Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
 
