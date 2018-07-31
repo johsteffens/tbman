@@ -114,7 +114,7 @@ void  tbman_nfree(    void* current_ptr, size_t current_size );
 
 <a name="anchor_one_function_for_everything"></a>
 ### One function for everything
-Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman. (For more details, see inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/master/tbman.h)).
+Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman. (For more details, see inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/947a88c820943c9902e572cb0c301f75daaae45e/tbman.h#L101)).
 
 ```C 
 void* tbman_alloc(  void* current_ptr,                      size_t requested_size, size_t* granted_size );
