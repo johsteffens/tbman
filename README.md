@@ -8,10 +8,10 @@
       * [Basic](#anchor_basic)
       * [Faster collection](#anchor_faster_collection)
       * [One function for everything](#anchor_one_function_for_everything)
-      * [Automatic Alignment](#anchor_automatic_alignment)
-      * [Granted Amount](#anchor_granted_amount)
-      * [Memory Tracking](#anchor_memory_tracking)
-      * [Multiple Managers](#anchor_multiple_managers)
+      * [Automatic alignment](#anchor_automatic_alignment)
+      * [Granted amount](#anchor_granted_amount)
+      * [Memory tracking](#anchor_memory_tracking)
+      * [Multiple managers](#anchor_multiple_managers)
    * [How it works](#anchor_how_it_works)
       * [Block-Pooling-Layer](#anchor_block-pooling-layer)
       * [Thread safety](#anchor_thread_safety)
@@ -119,7 +119,7 @@ void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_siz
 ```
 
 <a name="anchor_automatic_alignment"></a>
-### Automatic Alignment
+### Automatic alignment
 When requesting memory of **s** bytes and **s** can be expressed as product of two positive integers **s** = **m**\***n** such that **m** is a power of 2, then the returned memory is aligned to the lesser of **m** and `TBMAN_ALIGN`. 
 
 In practice, this means that if you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. Consequently all elements of the array are aligned to `sizeof( my_type )`. 
@@ -132,7 +132,7 @@ int32x4_t my_data = tbman_malloc( sizeof( int32x4_t ) * 10 ); // aligned array o
 ```
 
 <a name="anchor_granted_amount"></a>
-### Granted Amount
+### Granted amount
 For design reasons tbman might find no proper use for some space immediately following your requested memory block. In that case it grants you that extra space as well and you may use it as if you requested a larger block size. 
 <br><sub>*(Note: Tbman never grants less than requested.)*</sub>
 
@@ -160,7 +160,7 @@ printf( "%s\n", my_string );
 ```
 
 <a name="anchor_memory_tracking"></a>
-### Memory Tracking
+### Memory tracking
 You can query the total of tbman-allocated memory at any point in your program. The following function does this:
 ```C 
 size_t tbman_total_granted_space( void );
@@ -175,7 +175,7 @@ size_t memory_leak = tbman_total_granted_space() - prior_space;
 if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
 ```
 <a name="anchor_multiple_managers"></a>
-### Multiple Managers
+### Multiple managers
 Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in multiple threads to reduce lock-contention by giving each thread its own manager. 
 
 For each of above functions `tbman_` there exists a corresponding function with postfix `_s` meant for a dedicated manager instance. Except `tbman_s_open`, all functions `tbman_s_` take as first argument the reference to the dedicated manager instance.
