@@ -54,8 +54,8 @@ in C and C++ code.
 ### Requirements/Dependencies
    * gcc, clang or similar compiler suite supporting the C11 standard.
    * Library `pthread` of the POSIX.1c standard.
-   * Compiler options: -std=c11 -O3
-   * Linker options: -lm -lpthread
+   * Compiler options: `-std=c11 -O3`
+   * Linker options: `-lm -lpthread`
 
 <a name="anchor_quick_evaluation"></a>
 **Quick evaluation**:
