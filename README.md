@@ -125,9 +125,9 @@ void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_siz
 ### Automatic Alignment
 When requesting memory of **s** bytes and **s** can be expressed as product of two positive integers **s** = **n**\***m** such that **m** is a power of 2, then the returned memory is aligned to the lesser of **m** and `TBMAN_ALIGN`. 
 
-In practice, this means that if you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to `TBMAN_ALIGN`, then the memory block is alinged to `sizeof( my_type )`. Consequently all elements of the array are aligned to `sizeof( my_type )`. 
+In practice, this means that if you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. Consequently all elements of the array are aligned to `sizeof( my_type )`. 
 
-A possible use case is SIMD vectorization: Some SIMD operations require properly aligned variables. `TBMAN_ALIGN` is large enough to accomodate common SIMD data types.
+A possible use case is SIMD vectorization: Some SIMD operations require properly aligned variables. [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43) is large enough to accomodate common SIMD data types.
 
 **Example:**
 ```C 
