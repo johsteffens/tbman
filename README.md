@@ -145,7 +145,7 @@ Knowing about the the granted amount can be useful e.g. when optimizing the beha
 size_t tbman_granted_space( const void* ptr );
 ```
 
-   * Allocation with granted amount communicated. (For more details, see inline documentation for `tbman_alloc` in [`tbman.h`](https://github.com/johsteffens/tbman/blob/master/tbman.h)).
+   * Allocation with granted amount communicated. (For more details, see inline documentation for `tbman_alloc` in [`tbman.h`](https://github.com/johsteffens/tbman/blob/947a88c820943c9902e572cb0c301f75daaae45e/tbman.h#L101)).
 ```C 
 void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
 ```
