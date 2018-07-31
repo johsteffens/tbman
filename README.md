@@ -101,7 +101,7 @@ Usage and behavior is compatible to corresponding stdlib functions `malloc`, `fr
 
 <a name="anchor_faster_collection"></a>
 ### Faster collection
-If you free or reallocate memory and know the previoulsy allocated amount, you can further speed up processing by telling tbman about the currently allocated size using `tbman_nrealloc` for `tbman_realloc` and `tbman_nfree` for `tbman_free`. This helps the manager finding the corresponding node for the memory instance.
+If you free or reallocate memory and know the previoulsy allocated amount, you can further speed up processing by telling tbman about the currently allocated size using `tbman_nrealloc` for `tbman_realloc` and `tbman_nfree` for `tbman_free`. This helps the manager find the corresponding node for the memory instance.
 
 ```C
 void* tbman_nrealloc( void* current_ptr, size_t current_size, size_t new_size );
