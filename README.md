@@ -16,6 +16,7 @@
       * [Block-Pooling-Layer](#anchor_block-pooling-layer)
       * [Thread safety](#anchor_thread_safety)
       * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
+   * [Potential pitfall](#anchor_potential_pitfall)      
    * [Motivation](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
