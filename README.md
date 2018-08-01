@@ -16,7 +16,7 @@
       * [Block-Pooling-Layer](#anchor_block-pooling-layer)
       * [Thread safety](#anchor_thread_safety)
       * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
-   * [Potential pitfall](#anchor_potential_pitfall)      
+   * [Potential downsides](#potential_downsides)      
    * [Motivation](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
@@ -215,8 +215,16 @@ However, you can not manage the **same memory instance** with different managers
 
 Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
 
-<a name="anchor_potential_pitfall"></a>
-## Potential pitfall
+<a name="potential_downsides"></a>
+## Potential downsides
+
+### Preallocations
+Tbman preallocates and returns memory system memory in larger chunks to offload the system. That means that the memory your application occupies at a given time is likely higher than if you use system functions directly.
+
+### Memory slots with predefined size distribution
+Tbman organizes memory instances into slots with a predefined size distribution. If you allocate less than the closest fitting slot, the full slot-size is [granted to you](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this extra size tends to average around 20% of total memory usage.
+
+### Unsuitable memory model
 Tbman makes an assumption about the system's memory model, which goes beyond the C11 standard:
    * If two pointers `ptr1`, `ptr2` reference valid but **different** objects anywhere in the application's addressable memory space, then `( ptrdiff_t )( ptr1 - ptr2 )` can never be zero.
 
