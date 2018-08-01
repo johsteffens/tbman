@@ -214,6 +214,15 @@ However, you can not manage the **same memory instance** with different managers
 
 Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
 
+<a name="anchor_potential_pitfall"></a>
+## Potential pitfall
+Tbman makes an assumption about the system's memory model, which goes beyond the C11 standard:
+   * If two pointers `ptr1`, `ptr2` reference valid but **different** objects anywhere in the application's addressable memory space, then `( ptrdiff_t )( ptr1 - ptr2 )` can never be zero.
+
+Contrarily, the C standard states that the result of pointer subtraction is undefined if the objects are not of the same array or sub-object. (e.g. [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
+
+In practice, though, most modern platforms employ a flat memory model where tbman's assumption is safe. Very old systems, like early x86 platforms, used a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic, thus thwarting the assumption.
+
 <a name="anchor_motivation"></a>
 ## Motivation
 This memory manager has originally been conceived and developed for the project [beth](https://github.com/johsteffens/beth). For those interested in the manager but not keen on digesting the whole of project beth, we created this compact stand-alone solution as spin-off-project [tbman](https://github.com/johsteffens/tbman).
