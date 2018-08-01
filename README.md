@@ -39,8 +39,7 @@ in C and C++ code.
 * [Easy monitoring](#anchor_memory_tracking) of total memory usage. *(E.g. for leak detection)*
 * Optional communicaton of [actually granted amounts](#anchor_granted_amount). *(Useful for dynamic arrays)*
 * Platform independence:
-   * The code adheres to the c11-standard.
-   * It can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
+   * The code can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
    * It has been tested on Intel and ARM platforms.
 
 <a name="anchor_how_to_use_it"></a>
@@ -53,8 +52,8 @@ in C and C++ code.
 
 <a name="anchor_build_requirements"></a>
 ### Requirements/Dependencies
+   * The system should comply (sufficiently) with the POSIX standard.
    * gcc, clang or similar compiler suite supporting the C11 standard.
-   * Library `pthread` of the POSIX.1c standard.
    * Compiler options: `-std=c11 -O3`
    * Linker options: `-lm -lpthread`
 
