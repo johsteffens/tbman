@@ -230,7 +230,7 @@ Tbman makes an assumption about the system's memory model:
 
 This goes beyond the standard C guarantee, which allows a platform to leave the result of pointer subtraction undefined if the objects are not of the same array or same host-object. (see [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
 
-Most modern platforms employ a flat memory model where tbman's assumption is safe. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic, thus thwarting the assumption.
+Most modern platforms employ a flat memory model where tbman's assumption is correct and safe. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic, thus thwarting the assumption.
 
 <a name="anchor_motivation"></a>
 ## Motivation
