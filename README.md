@@ -225,7 +225,7 @@ Tbman preallocates and returns memory system memory in larger chunks to offload 
 Tbman organizes memory instances into slots with a predefined size distribution. If you allocate less than the closest fitting slot, the full slot-size is [granted to you](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this extra size tends to average around 20% of total memory usage.
 
 ### Unsuitable memory model
-Tbman makes an assumption about the system's memory model, which goes beyond the C11 standard:
+Tbman makes an assumption about the system's memory model, which goes beyond the C11 standard guarantees:
    * If two pointers `ptr1`, `ptr2` reference valid but **different** objects anywhere in the application's addressable memory space, then `( ptrdiff_t )( ptr1 - ptr2 )` can never be zero.
 
 Contrarily, the C standard states that the result of pointer subtraction is undefined if the objects are not of the same array or sub-object. (e.g. [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
