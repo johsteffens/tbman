@@ -149,12 +149,13 @@ void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_siz
 ```
 **Example:**
 ```C 
-size_t my_string_size = 5;
-char* my_string = tbman_alloc( NULL, my_string_size, &my_string_size );
-// at this point my_string_size can be larger 5. Using that extra space is ok.
-for( size_t i = 0; i < 4; i++ )  my_string[ i ] = '=';
-for( size_t i = 4; i < my_string_size - 1; i++ ) my_string[ i ] = '#';
-my_string[ my_string_size - 1 ] = 0;
+size_t requested_space = 5;
+size_t granted_space;
+char* my_string = tbman_alloc( NULL, requested_space, &granted_space );
+// At this point granted_space >= requested_space. Using that extra space is ok.
+for( size_t i = 0; i < requested_space - 1; i++ ) my_string[ i ] = '=';
+for( size_t i = requested_space - 1; i < granted_space - 1; i++ ) my_string[ i ] = '#';
+my_string[ granted_space - 1 ] = 0;
 printf( "%s\n", my_string );
 // Possible output: ====###
 ```
