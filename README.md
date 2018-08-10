@@ -120,7 +120,7 @@ void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_siz
 
 <a name="anchor_automatic_alignment"></a>
 ### Automatic alignment
-When requesting memory of **s** bytes and **s** can be expressed as product of two positive integers **s** = **m**\***n** such that **m** is a power of 2, then the returned memory is aligned to the lesser of **m** and `TBMAN_ALIGN`. 
+When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43). 
 
 In practice, this means that if you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. Consequently all elements of the array are aligned to `sizeof( my_type )`. 
 
