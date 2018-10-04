@@ -124,7 +124,7 @@ When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product 
 
 In practice, this means that if you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. Consequently all elements of the array are aligned to `sizeof( my_type )`. This does not only cover all standard types in C/C++ `char, short, int, float, double, etc` but also includes extended types such as `int32x4_t, float32x4_t, etc`.
 
-A possible use case is SIMD vectorization: Specific SIMD operations may require or run faster on properly aligned variables and arrays. [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43) is large enough to accomodate commonly used SIMD data types for `SSD, AVX, NEON, etc`.
+A possible use case is SIMD vectorization: Specific SIMD operations may require or run faster on properly aligned variables and arrays. [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43) is large enough to accomodate commonly used SIMD data types for `SSE, AVX, NEON, etc`.
 
 **Example:**
 ```C 
@@ -152,7 +152,7 @@ void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_siz
 size_t requested_space = 5;
 size_t granted_space;
 char* my_string = tbman_alloc( NULL, requested_space, &granted_space );
-// At this point granted_space >= requested_space. Using that extra space is ok.
+// At this point granted_space >= requested_space. Using that extra space is allowed.
 for( size_t i = 0; i < requested_space - 1; i++ ) my_string[ i ] = '=';
 for( size_t i = requested_space - 1; i < granted_space - 1; i++ ) my_string[ i ] = '#';
 my_string[ granted_space - 1 ] = 0;
