@@ -47,24 +47,23 @@ in C and C++ code.
 ## How to use it
 * `git clone https://github.com/johsteffens/tbman.git`
 
-**Operating systems supporting POSIX: (e.g. Linux, Android, Darwin, ... )** Just follow suggestions below.
-
-**Windows:** [Set up a POSIX-environment first](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows).
-
 <a name="anchor_build_requirements"></a>
 ### Requirements/Dependencies
-   * The system should comply (sufficiently) with the POSIX standard.
-   * gcc, clang or similar compiler suite supporting the C11 standard.
+   * Compiler suite supporting the C11 standard (e.g. gcc, clang).
+   * Some POSIX compliance (e.g. pthread should be available).
+      * Linux, Android, Darwin (and related OS) normally comply sufficiently.
+      * Windows (general): [Setting up a POSIX-environment is possible.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
+      * Windows 10: Also provides an optional Linux-Subsystem.
+
    * Compiler options: `-std=c11 -O3`
    * Linker options: `-lm -lpthread`
-
+   
 ### In your workspace
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
 * In your code:
   * `#include "tbman.h"`
   * Call once `tbman_open();` at the beginning or your program. *(E.g. first in `main()`)*
   * Use `tbman_*` - functions anywhere.
-    <br><sub>Note: Do not mix stdlib and tbman alloc-functions for the same memory instance.</sub>
   * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`)*
 
 ### C++
