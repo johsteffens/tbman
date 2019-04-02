@@ -98,7 +98,7 @@ void  tbman_free(    void* ptr              ); // freeing
 Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
 <br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
 
-Tbman must be initialized once before usage and should also be properly exited at the end of the program:
+Tbman must be initialized once before usage. It should also be properly closed at the end of the program. These functions take care of it:
 ```C
 void tbman_open( void );  // initializes tbman
 void tbman_close( void ); // closes tbman
