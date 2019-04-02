@@ -177,7 +177,7 @@ Knowing about the the granted amount can be useful e.g. when optimizing the beha
 size_t tbman_granted_space( const void* ptr );
 ```
 
-   * [Allocation with granted amount communicated](#anchor_one_function_for_everything).
+   * [Allocation with granted amount communicated](#anchor_one_function_for_everything):
 ```C 
 void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
 ```
