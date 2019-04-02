@@ -200,7 +200,9 @@ You can query the total of tbman-allocated memory at any point in your program. 
 ```C 
 size_t tbman_total_granted_space( void );
 ```
-This can be helpful to asses the memory footprint of your code and for leak detection.
+Possible use-cases: 
+   * Assessing the memory footprint of a program, sections thereof or objects. 
+   * Detecting and debugging memory leaks.
 
 **Example:**
 ```C 
