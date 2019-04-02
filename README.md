@@ -211,7 +211,7 @@ if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", m
 ```
 <a name="anchor_multiple_managers"></a>
 ### Multiple managers
-Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in multiple threads to reduce lock-contention by giving each thread its own manager. 
+Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in a multi threaded context. Giving each thread its own manager for thread-local memory can reduce lock-contentaion.
 
 For each of above functions `tbman_` there exists a corresponding function with postfix `_s` meant for a dedicated manager instance. Except `tbman_s_open`, all functions `tbman_s_` take as first argument the reference to the dedicated manager instance.
 
