@@ -4,8 +4,8 @@
    * [What it is](#anchor_what_it_is)
    * [Benefits](#anchor_benefits)
    * [How to use it](#anchor_how_to_use_it)
-   * [Features](#anchor_features)
-      * [Basic](#anchor_basic)
+   * [Detailed description](#anchor_features)
+      * [Basics](#anchor_basic)
       * [Faster collection](#anchor_faster_collection)
       * [One function for everything](#anchor_one_function_for_everything)
       * [Automatic alignment](#anchor_automatic_alignment)
@@ -85,7 +85,7 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
    * Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 <a name="anchor_features"></a>
-## Detailed Description
+## Detailed description
 
 <a name="anchor_basic"></a>
 ### Basics
