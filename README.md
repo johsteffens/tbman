@@ -230,7 +230,7 @@ tbman_s_close( my_man ); // closes a dedicated manager
 
 <a name="anchor_block-pooling-layer"></a>
 ### Block-Pooling-Layer with Tokens
-Tbman introduces a dedicated management layer using a "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently to acquire a new pool or return an empty pool. This offloads the system manager significantly. Compared to always using system calls it can speed up overall processing and/or reduce fragmentation, particularly in programs where many small sized memory instances are used.
+Tbman represents a dedicated management layer. It uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently to acquire a new pool or return an empty pool. This offloads the system manager significantly. Compared to always using system calls it can speed up overall processing and/or reduce fragmentation, particularly in programs where many small sized memory instances are used.
 
 Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely to mess up the manager itself and can be more easily tracked down.
 
@@ -242,7 +242,7 @@ When the client requests a large memory instance, where pooling would be wastefu
 ### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
 
-Concurrency is governed by a mutex. This means that memory management is not lock free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous usage of the same manager lock-contention time might be noticeable compared to single threaded usage.
+Concurrency is governed by a mutex. This means that memory management is not lock-free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous usage of the same manager lock-contention time might be noticeable compared to single threaded usage.
 
 <a name="anchor_mixing_different_memory_managers"></a>
 ### Mixing different memory managers
@@ -254,12 +254,15 @@ Likewise, you can not manage the same memory instance with different [dedicated 
 
 <a name="potential_downsides"></a>
 ## Potential downsides
+Below are some side effects you might encounter. We believe they are tolerable for the vast majority of use cases but you should be aware of them.
 
 ### Preallocations
-Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly. In practice, this overhead is usually tolerable but you might want to be aware of it.
+Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly.
 
 ### Memory slots with predefined size distribution
-Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this extra size tends to average around 20% of total memory usage.
+Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this extra size tends to average between 10% ... 30% of total memory usage.
+
+*Note that other memory managers can have some memory-waste, too. E.g. memory fragmentation can be a cause of waste. Since by design tbman minimizes fragmentation, the actual difference of waste compared to using an alternative manager can be less than above figure.*
 
 ### Unsuitable memory model
 Tbman makes an assumption about the system's memory model:
