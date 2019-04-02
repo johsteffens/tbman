@@ -91,17 +91,17 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 ### Basics
 Tbman offers the three basic functions of a memory manager:
 ```C
-void* tbman_malloc(             size_t size );
-void* tbman_realloc( void* ptr, size_t size );
-void  tbman_free(    void* ptr              );
+void* tbman_malloc(             size_t size ); // new allocation
+void* tbman_realloc( void* ptr, size_t size ); // reallocation
+void  tbman_free(    void* ptr              ); // freeing
 ```
 Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
 <br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
 
 Tbman must be initialized once before usage and should also be properly exited at the end of the program:
 ```C
-void tbman_open( void );
-void tbman_close( void );
+void tbman_open( void );  // initializes tbman
+void tbman_close( void ); // closes tbman
 ```
 **Example:**
 ```C 
@@ -128,12 +128,31 @@ void  tbman_nfree(    void* current_ptr, size_t current_size );
 
 <a name="anchor_one_function_for_everything"></a>
 ### One function for everything
-Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman. (For more details, see inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/947a88c820943c9902e572cb0c301f75daaae45e/tbman.h#L101)).
+Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman.
 
 ```C 
 void* tbman_alloc(  void* current_ptr,                      size_t requested_size, size_t* granted_size );
 void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size );
 ```
+`tbman_nalloc` works slightly faster than `tbman_alloc` but requires extra size input. The two functions can also be mixed; even serving the same memory instance.
+
+**Arguments**
+   * `current_ptr` <br>
+Pointer to current memory instance for freeing or reallocation; Set to `NULL` for pure allocation.
+
+   * `current_size` (only `_nalloc`) <br>
+Previously requested or granted size for freeing or reallocation of a memory instance. Set to `0` for pure allocation.  
+
+   * `requested_size` <br>
+Requested new size pure allocation or reallocation. Set to `0` for freeing.
+
+   * `granted_size` <br>
+Optional pointer to variable where the function stores the [granted](#anchor_granted_amount) amount. Set to `NULL` when not needed.
+
+**Return value** <br>
+Pointer to new memory instance for pure allocation or reallocation. Returns `NULL` in case of freeing.
+
+(See also inline documentation for these functions in [`tbman.h`](https://github.com/johsteffens/tbman/blob/947a88c820943c9902e572cb0c301f75daaae45e/tbman.h#L101)).
 
 <a name="anchor_automatic_alignment"></a>
 ### Automatic alignment
