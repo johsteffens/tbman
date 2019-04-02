@@ -254,7 +254,7 @@ Likewise, you can not manage the same memory instance with different [dedicated 
 ## Potential downsides
 
 ### Preallocations
-Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly. In practice, this oevrehead is usually tolerable but you might want to be aware of it.
+Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly. In practice, this overhead is usually tolerable but you might want to be aware of it.
 
 ### Memory slots with predefined size distribution
 Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this extra size tends to average around 20% of total memory usage.
