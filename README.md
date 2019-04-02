@@ -211,6 +211,12 @@ my_never_leaking_function( arg1, arg2, arg3 );
 size_t memory_leak = tbman_total_granted_space() - prior_space;
 if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
 ```
+<a name="anchor_thread_safety"></a>
+### Thread safety
+Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
+
+Concurrency is governed by a mutex. This means that memory management is not lock-free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous usage of the same manager lock-contention time might be noticeable compared to single threaded usage.
+
 <a name="anchor_multiple_managers"></a>
 ### Multiple managers
 Functions `tbman_` above relate to global management (one manager for everything). You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object. Each manager has its own mutex. This is particularly helpful in a multi threaded context. Giving each thread its own manager for thread-local memory can reduce lock-contentaion.
@@ -225,6 +231,14 @@ char* my_memory = tbman_s_malloc( my_man, 1024 );
 tbman_s_free( my_man, my_memory );  
 tbman_s_close( my_man ); // closes a dedicated manager
 ```
+<a name="anchor_mixing_different_memory_managers"></a>
+### Mixing different memory managers
+Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems.
+
+However, different managers can not serve the **same memory instance**. For example: You can not use `free` or `realloc` on a memory instance which was allocated with `tbman_malloc` (`tbman_realloc`) or vice versa.
+
+Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
+
 <a name="anchor_how_it_works"></a>
 ## How it works
 
@@ -237,20 +251,6 @@ Each memory instance is associated with an internal node controlled by tbman. Th
 A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
 
 When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
-
-<a name="anchor_thread_safety"></a>
-### Thread safety
-Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
-
-Concurrency is governed by a mutex. This means that memory management is not lock-free. Normally, this will not significantly affect processing speed for typical multi threaded programs. Only during heavvy simultaneous usage of the same manager lock-contention time might be noticeable compared to single threaded usage.
-
-<a name="anchor_mixing_different_memory_managers"></a>
-### Mixing different memory managers
-Tbman does not affect the behavior of other memory managers (such as `malloc`, `free`, `realloc`), so you can mix code using different management systems.
-
-However, different managers can not serve the **same memory instance**. For example: You can not use `free` or `realloc` on a memory instance which was allocated with `tbman_malloc` (`tbman_realloc`) or vice versa.
-
-Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
 
 <a name="potential_downsides"></a>
 ## Potential downsides
