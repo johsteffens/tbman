@@ -156,11 +156,9 @@ Pointer to new memory instance for pure allocation or reallocation. Returns `NUL
 
 <a name="anchor_automatic_alignment"></a>
 ### Automatic alignment
-When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43). 
+Tbman aligns the memory instance. This not only covers standard C/C++ data types `char, short, int, float, double, etc` but also larger types such as `int32x4_t, float32x4_t, etc`, which are typically used for SIMD-extensions such as `SSE, AVX, NEON, etc`.
 
-In practice, this means that if you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. Consequently all elements of the array are aligned to `sizeof( my_type )`. This does not only cover all standard types in C/C++ `char, short, int, float, double, etc` but also includes extended types such as `int32x4_t, float32x4_t, etc`.
-
-A possible use case is SIMD vectorization: Specific SIMD operations may require or run faster on properly aligned variables and arrays. [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43) is large enough to accomodate commonly used SIMD data types for `SSE, AVX, NEON, etc`.
+To achieve this, tbman analyzes the requested size: If you allocate an array of data type `my_type` with `sizeof( my_type )` being a power of two smaller-equal to [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. More generally: When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43). 
 
 **Example:**
 ```C 
