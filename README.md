@@ -85,10 +85,10 @@ http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
    * Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 <a name="anchor_features"></a>
-## Features
+## Detailed Description
 
 <a name="anchor_basic"></a>
-### Basic
+### Basics
 Tbman offers the three basic functions of a memory manager:
 ```C
 void* tbman_malloc(             size_t size );
@@ -97,6 +97,24 @@ void  tbman_free(    void* ptr              );
 ```
 Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
 <br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
+
+Tbman must be initialized once before usage and should also be properly exited at the end of the program:
+```C
+void tbman_open( void );
+void tbman_close( void );
+```
+**Example:**
+```C 
+int main( int argc, char* argv[] )
+{
+   tbman_open();
+   
+   ... // my program
+   
+   tbman_close();
+   return my_exit_state;
+}
+```
 
 <a name="anchor_faster_collection"></a>
 ### Faster collection
