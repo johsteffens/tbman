@@ -254,7 +254,7 @@ Likewise, you can not manage the same memory instance with different [dedicated 
 
 <a name="potential_downsides"></a>
 ## Potential downsides
-Below are some side effects you might encounter. We believe they are tolerable for the vast majority of use cases but you should be aware of them.
+Below are some side effects you should be aware of. We believe they are tolerable for the vast majority of use cases.
 
 ### Preallocations
 Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly.
