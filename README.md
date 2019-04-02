@@ -138,10 +138,10 @@ void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_siz
 
 **Arguments**
    * `current_ptr` <br>
-Pointer to current memory instance for freeing or reallocation; Set to `NULL` for pure allocation.
+Pointer to current memory instance for freeing or reallocating; Set to `NULL` for pure allocation.
 
    * `current_size` (only `_nalloc`) <br>
-Previously requested or [granted size](#anchor_granted_amount) for freeing or reallocation of a memory instance. Set to `0` for pure allocation.  
+Previously requested or [granted size](#anchor_granted_amount) for freeing or reallocating a memory instance. Set to `0` for pure allocation.  
 
    * `requested_size` <br>
 Requested new size pure allocation or reallocation. Set to `0` for freeing.
