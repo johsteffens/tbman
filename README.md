@@ -14,9 +14,9 @@
       * [Thread safety](#anchor_thread_safety)
       * [Multiple managers](#anchor_multiple_managers)
       * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
-   * [How it works](#anchor_how_it_works)
-      * [Block-Pooling-Layer with Tokens](#anchor_block-pooling-layer)
    * [Side effects](#side_effects)      
+   * [How it works internally](#anchor_how_it_works_internally)
+      * [Block-Pooling-Layer with Tokens](#anchor_block-pooling-layer)
    * [Motivation](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
@@ -239,19 +239,6 @@ However, different managers can not serve the **same memory instance**. For exam
 
 Likewise, you can not manage the same memory instance with different [dedicated managers](#anchor_multiple_managers).
 
-<a name="anchor_how_it_works"></a>
-## How it works
-
-<a name="anchor_block-pooling-layer"></a>
-### Block-Pooling-Layer with Tokens
-Tbman represents a dedicated management layer. It uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently to acquire a new pool or return an empty pool. This offloads the system manager significantly. Compared to always using system calls it can speed up overall processing and/or reduce fragmentation, particularly in programs where many small sized memory instances are used.
-
-Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely to mess up the manager itself and can be more easily tracked down.
-
-A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
-
-When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
-
 <a name="side_effects"></a>
 ## Side effects
 Below are some side effects you should be aware of. We believe they are tolerable for the vast majority of use cases.
@@ -271,6 +258,19 @@ Tbman makes an assumption about the system's memory model:
 Although this sounds like a no-brainer, it actually goes beyond the standard C provisions. Std. C allows the compiler implementation to leave the result of pointer subtraction undefined if the objects are not of the same array or same host-object. (see [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
 
 *Note that most modern platforms employ a flat memory model where tbman's assumption is correct and safe. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic. On that memory model tbman would not work correctly.*
+
+<a name="anchor_how_it_works_internally"></a>
+## How it works internally
+
+<a name="anchor_block-pooling-layer"></a>
+### Block-Pooling-Layer with Tokens
+Tbman represents a dedicated management layer. It uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently to acquire a new pool or return an empty pool. This offloads the system manager significantly. Compared to always using system calls it can speed up overall processing and/or reduce fragmentation, particularly in programs where many small sized memory instances are used.
+
+Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely to mess up the manager itself and can be more easily tracked down.
+
+A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
+
+When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
 
 <a name="anchor_motivation"></a>
 ## Motivation
