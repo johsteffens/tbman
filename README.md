@@ -49,14 +49,16 @@ in C and C++ code.
 <a name="anchor_build_requirements"></a>
 ### Requirements/Dependencies
    * Compiler suite supporting the C11 standard (e.g. gcc, clang).
-   * Some POSIX compliance (e.g. pthread should be available).
+   * Compiler options: `-std=c11 -O3`  (or compatible settings)
+   * Linker options: `-lm -lpthread` (or compatible settings)
+   * Some POSIX compliance:
+      *  **pthread**: Tbman uses pthread-mutexes (locking) for thread safety. If you can dispense with thread safety or wish to use alternative means of locking, it is possible to remove/change the code using pthread but keep the remaining functionality of tbman intact.
+      * **Memory Model**: Posix systems usually provide a [flat memory model](#memory_model), which is expected by tbman.
       * Linux, Android, Darwin (and related OS) normally comply sufficiently.
-      * Windows (general): [Setting up a POSIX-environment is possible.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
-      * Windows 10: Also provides an optional Linux-Subsystem.
-
-   * Compiler options: `-std=c11 -O3`
-   * Linker options: `-lm -lpthread`
-   
+      * Native Windows may not comply but there are ways to make it so:
+         * [Setting up a POSIX-environment is possible.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
+         * Windows 10 also provides an optional Linux-Subsystem.
+      
 ### In your workspace
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
 * In your code:
@@ -250,8 +252,9 @@ Tbman organizes memory instances into slots with a predefined size distribution.
 
 *Note that other memory managers can have some memory-waste, too. E.g. memory fragmentation can be a cause of waste. Since by design tbman minimizes fragmentation, the actual difference of waste compared to using an alternative manager can be less than above figure.*
 
-### Unsuitable memory model
-Tbman makes an assumption about the system's memory model:
+<a name="memory_model"></a>
+### Memory model
+Tbman expects a flat memory model. More specifically, it requires the following behavior:
    * If two pointers `ptr1`, `ptr2` reference valid but **different** objects anywhere in the application's addressable memory space, then `( ptrdiff_t )( ptr1 - ptr2 )` can never be zero.
 
 Although this sounds like a no-brainer, it actually goes beyond the standard C provisions. Std. C allows the compiler implementation to leave the result of pointer subtraction undefined if the objects are not of the same array or same host-object. (see [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
