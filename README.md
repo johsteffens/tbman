@@ -16,7 +16,7 @@
       * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
    * [How it works](#anchor_how_it_works)
       * [Block-Pooling-Layer with Tokens](#anchor_block-pooling-layer)
-   * [Potential downsides](#potential_downsides)      
+   * [Side effects](#side_effects)      
    * [Motivation](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
@@ -252,8 +252,8 @@ A special design feature is the combination of associative tokens with a special
 
 When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
 
-<a name="potential_downsides"></a>
-## Potential downsides
+<a name="side_effects"></a>
+## Side effects
 Below are some side effects you should be aware of. We believe they are tolerable for the vast majority of use cases.
 
 ### Preallocations
@@ -270,7 +270,7 @@ Tbman makes an assumption about the system's memory model:
 
 Although this sounds like a no-brainer, it actually goes beyond the standard C provisions. Std. C allows the compiler implementation to leave the result of pointer subtraction undefined if the objects are not of the same array or same host-object. (see [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
 
-However, most modern platforms employ a flat memory model where tbman's assumption is correct and safe. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic, thus thwarting the assumption.
+*Note that most modern platforms employ a flat memory model where tbman's assumption is correct and safe. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic, thus thwarting the assumption.*
 
 <a name="anchor_motivation"></a>
 ## Motivation
