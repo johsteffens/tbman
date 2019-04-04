@@ -16,7 +16,6 @@
       * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
    * [Side effects](#side_effects)      
    * [How it works internally](#anchor_how_it_works_internally)
-      * [Block-Pooling-Layer with Tokens](#anchor_block-pooling-layer)
    * [Motivation](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
