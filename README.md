@@ -256,10 +256,10 @@ When the client requests a large memory instance, where pooling would be wastefu
 ## Side effects
 Below are some side effects you should be aware of. We believe they are tolerable for the vast majority of use cases.
 
-### Preallocations
+### Prefetching
 Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly.
 
-### Memory slots with predefined size distribution
+### Memory waste
 Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this extra size tends to average between 10% ... 30% of total memory usage.
 
 *Note that other memory managers can have some memory-waste, too. E.g. memory fragmentation can be a cause of waste. Since by design tbman minimizes fragmentation, the actual difference of waste compared to using an alternative manager can be less than above figure.*
