@@ -52,7 +52,7 @@ in C and C++ code.
    * Compiler options: `-std=c11 -O3`  (or compatible settings)
    * Linker options: `-lm -lpthread` (or compatible settings)
    * Some POSIX compliance:
-      *  **pthread**: Tbman uses pthread-mutexes (locking) for thread safety. If you can dispense with thread safety or wish to use alternative means of locking, it is possible to remove/change the code using pthread but keep the remaining functionality of tbman intact.
+      *  **pthread**: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`. If pthread is not available and you can dispense with thread safety, the code `pthread_mutex_...` can be removed without impacting the remaining functionality. A better solution, though, is to replace `pthread_mutex` with a native mutex of your target platform.
       * **Memory Model**: Posix systems usually provide a [flat memory model](#memory_model), which is expected by tbman.
       * **Linux, Android, Darwin (and related OS)**: These should have sufficient compliance.
       * **Windows**: To build tbman on Windows likely needs some workaround. Here are three different possibilities. Which is suitable depends on your needs:
