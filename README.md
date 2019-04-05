@@ -54,11 +54,11 @@ in C and C++ code.
    * Some POSIX compliance:
       *  **pthread**: Tbman uses pthread-mutexes (locking) for thread safety. If you can dispense with thread safety or wish to use alternative means of locking, it is possible to remove/change the code using pthread but keep the remaining functionality of tbman intact.
       * **Memory Model**: Posix systems usually provide a [flat memory model](#memory_model), which is expected by tbman.
-      * Linux, Android, Darwin (and related OS) normally comply sufficiently.
-      * Native Windows probably needs some workaround. Here are three different possibilities. Which is suitable depends on your needs:
+      * **Linux, Android, Darwin (and related OS)**: These should have sufficient compliance.
+      * **Windows**: To build tbman on Windows likely needs some workaround. Here are three different possibilities. Which is suitable depends on your needs:
          * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
          * Windows 10: Provides an optional Linux-Subsystem.
-         * In tbman: Replace pthread-locks by native locks; then build without pthread.
+         * In `tbman.c`: Replace pthread-locks by native locks; then build without pthread.
       
 ### In your workspace
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
