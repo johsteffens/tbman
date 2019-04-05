@@ -55,9 +55,10 @@ in C and C++ code.
       *  **pthread**: Tbman uses pthread-mutexes (locking) for thread safety. If you can dispense with thread safety or wish to use alternative means of locking, it is possible to remove/change the code using pthread but keep the remaining functionality of tbman intact.
       * **Memory Model**: Posix systems usually provide a [flat memory model](#memory_model), which is expected by tbman.
       * Linux, Android, Darwin (and related OS) normally comply sufficiently.
-      * Native Windows may not comply but there are ways to make it so:
-         * [Setting up a POSIX-environment is possible.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
-         * Windows 10 also provides an optional Linux-Subsystem.
+      * Native Windows probably needs some workaround. Here are three different possibilities. Which is suitable depends on your needs:
+         * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
+         * Windows 10: Provides an optional Linux-Subsystem.
+         * In tbman: Replace pthread-locks by native locks; then build without pthread.
       
 ### In your workspace
 * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
