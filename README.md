@@ -209,7 +209,9 @@ Possible use-cases:
 **Example:**
 ```C 
 size_t prior_space = tbman_total_granted_space();
-my_never_leaking_function( arg1, arg2, arg3 );
+
+... // some code to be tested for leaks
+
 size_t memory_leak = tbman_total_granted_space() - prior_space;
 if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
 ```
