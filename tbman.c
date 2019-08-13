@@ -613,6 +613,8 @@ void tbman_s_down( tbman_s* o )
     btree_vd_s_discard( o->internal_btree );
     btree_ps_s_discard( o->external_btree );
 
+    if( o->block_size_array ) free( o->block_size_array );
+
     pthread_mutex_unlock( &o->mutex );
     pthread_mutex_destroy( &o->mutex );
 }
