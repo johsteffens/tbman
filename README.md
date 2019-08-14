@@ -267,7 +267,7 @@ Although this sounds like a no-brainer, it actually goes beyond the standard C p
 ### Leak Detection
 Some debugging tools (e.g. [valgrind](http://www.valgrind.org)) can detect memory leaks in a program. Forgetting to free memory you allocated using tbman represents a leak. However, since tbman_close() returns all [tbman-pools](#anchor_block-pooling-layer) to the system, such a leak might remain undetected by a debugging tool, because it only analyzes your program's interaction with the system.
 
-In order to reliably detect all memory leaks in your program, check tbman_total_granted_space() before closing tbman:
+In order to reliably detect all memory leaks in your program, check `tbman_total_granted_space()` before closing tbman:
 
 **Example:**
 ```C 
