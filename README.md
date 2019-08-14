@@ -197,7 +197,7 @@ printf( "%s\n", my_string );
 ```
 
 <a name="anchor_memory_tracking"></a>
-### Memory tracking
+### Memory Tracking
 You can query the total of tbman-allocated memory at any point in your program. The following function does this:
 ```C 
 size_t tbman_total_granted_space( void );
@@ -250,13 +250,13 @@ Below are some side effects you should be aware of. We believe they are tolerabl
 ### Prefetching
 Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly.
 
-### Excess memory
+### Excess Memory
 Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this overhead tends to average around 10% ... 30% of the requested memory.
 
 *Note that also other memory managers reserve excess memory and/or render memory sections temporarily unusable (e.g. due to fragmentation). Which manager is most efficient depends on the use case.*
 
 <a name="memory_model"></a>
-### Memory model
+### Memory Model
 Tbman expects a flat memory model. More specifically, it requires the following behavior:
    * If two pointers `ptr1`, `ptr2` reference valid but **different** objects anywhere in the application's addressable memory space, then `( ptrdiff_t )( ptr1 - ptr2 )` can never be zero.
 
