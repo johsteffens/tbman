@@ -197,7 +197,7 @@ printf( "%s\n", my_string );
 ```
 
 <a name="anchor_memory_tracking"></a>
-### Memory tracking
+### Memory Tracking
 You can query the total of tbman-allocated memory at any point in your program. The following function does this:
 ```C 
 size_t tbman_total_granted_space( void );
@@ -250,19 +250,41 @@ Below are some side effects you should be aware of. We believe they are tolerabl
 ### Prefetching
 Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly.
 
-### Excess memory
+### Excess Memory
 Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this overhead tends to average around 10% ... 30% of the requested memory.
 
 *Note that also other memory managers reserve excess memory and/or render memory sections temporarily unusable (e.g. due to fragmentation). Which manager is most efficient depends on the use case.*
 
 <a name="memory_model"></a>
-### Memory model
+### Memory Model
 Tbman expects a flat memory model. More specifically, it requires the following behavior:
    * If two pointers `ptr1`, `ptr2` reference valid but **different** objects anywhere in the application's addressable memory space, then `( ptrdiff_t )( ptr1 - ptr2 )` can never be zero.
 
 Although this sounds like a no-brainer, it actually goes beyond the standard C provisions. Std. C allows the compiler implementation to leave the result of pointer subtraction undefined if the objects are not of the same array- or structure-instance. (see [cppreference.com: Pointer arithmetic](https://en.cppreference.com/w/c/language/operator_arithmetic#Pointer_arithmetic).)
 
 *Note that most modern platforms employ a flat memory model. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic. On that model tbman would not work correctly.*
+
+### Leak Detection
+Some debugging tools (e.g. [valgrind](http://www.valgrind.org)) can detect memory leaks in a program. Forgetting to free memory you allocated using tbman represents a leak. However, since tbman_close() returns all [tbman-pools](#anchor_block-pooling-layer) to the system, such a leak might remain undetected by a debugging tool, because it only analyzes your program's interaction with the system.
+
+In order to reliably detect all memory leaks in your program, check `tbman_total_granted_space()` before closing tbman:
+
+**Example:**
+```C 
+int main( int argc, char* argv[] )
+{
+   tbman_open();
+   
+   ... // my program
+   
+   if( tbman_total_granted_space() > 0 )
+   {
+      fprintf( stderr, "Memory leak of %zu bytes detected.\n", tbman_total_granted_space() );
+   }
+   tbman_close();    
+   return my_exit_state;
+}
+```
 
 <a name="anchor_how_it_works_internally"></a>
 ## How it works internally
@@ -273,7 +295,7 @@ Tbman represents a dedicated management layer. It uses "conservative" memory poo
 
 Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely to mess up the manager itself and can be more easily tracked down.
 
-A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
+A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick (O(1) complexity) binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
 
 When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
 
