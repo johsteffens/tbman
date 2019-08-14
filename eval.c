@@ -448,5 +448,10 @@ int main( void )
 {
     tbman_open();
     tbman_test();
+
+    if( tbman_total_granted_space() > 0 )
+    {
+        fprintf( stderr, "Memory leak of %zu bytes detected.\n", tbman_total_granted_space() );
+    }
     tbman_close();
 }
