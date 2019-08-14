@@ -279,7 +279,7 @@ int main( int argc, char* argv[] )
    
    if( tbman_total_granted_space() > 0 )
    {
-      fprintf( stderr, "Memory leak of %zu bytes detected.", tbman_total_granted_space() );
+      fprintf( stderr, "Memory leak of %zu bytes detected.\n", tbman_total_granted_space() );
    }
    tbman_close();    
    return my_exit_state;
