@@ -52,10 +52,10 @@ in C and C++ code.
    * Compiler options: `-std=c11 -O3`  (or compatible settings)
    * Linker options: `-lm -lpthread` (or compatible settings)
    * Some POSIX compliance:
-      *  **pthread**: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`. If pthread is not available and you can dispense with thread safety, the code `pthread_mutex_...` can be removed without impacting the remaining functionality. A better solution, though, is to replace `pthread_mutex` with a native mutex of your target platform.
+      *  **pthread**: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`. If pthread is not available and you can dispense with thread safety, the code `pthread_mutex_...` can be removed without impacting the remaining functionality. A better solution, though, is replacing `pthread_mutex` with a native mutex of your target platform.
       * **Memory Model**: Posix systems usually provide a [flat memory model](#memory_model), which is expected by tbman.
       * **Linux, Android, Darwin (and related OS)**: These should offer sufficient compliance.
-      * **Windows**: To build tbman on Windows likely needs a workaround. Here are three possibilities:
+      * **Windows**: Building tbman on Windows likely needs a workaround. Here are three possibilities:
          * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
          * Windows 10: Provides an optional Linux-Subsystem.
          * In `tbman.c`: Replace pthread-locks by native locks; then build without pthread.
@@ -130,7 +130,7 @@ void  tbman_nfree(    void* current_ptr, size_t current_size );
 
 <a name="anchor_one_function_for_everything"></a>
 ### One function for everything
-Alternatively, you can use one of the following two functions to handle all basic manager functionality as well as some special features of tbman.
+Alternatively, you can use one of the following two functions for basic manager functionality as well as some special features of tbman.
 
 ```C 
 void* tbman_alloc(  void* current_ptr,                      size_t requested_size, size_t* granted_size );
@@ -160,7 +160,7 @@ Pointer to new memory instance for pure allocation or reallocation. Returns `NUL
 ### Automatic alignment
 Tbman aligns the memory instance. This covers standard C/C++ data types `char, short, int, float, double, etc` and also larger types such as `int32x4_t, float32x4_t, etc`, which are typically used for SIMD-extensions such as `SSE, AVX, NEON, etc`.
 
-To achieve this, tbman analyzes the requested size. If you allocate an instance or array of type `my_type` with `sizeof( my_type )` being a power of two not larger than [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. More generally: When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43). 
+In order to achieve this, tbman analyzes the requested size. If you allocate an instance or array of type `my_type` with `sizeof( my_type )` being a power of two not larger than [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. More generally: When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43). 
 
 **Example:**
 ```C 
@@ -291,9 +291,9 @@ int main( int argc, char* argv[] )
 
 <a name="anchor_block-pooling-layer"></a>
 ### Block-Pooling-Layer with Tokens
-Tbman represents a dedicated management layer. It uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently to acquire a new pool or return an empty pool. This offloads the system manager significantly. Compared to always using system calls it can speed up overall processing and/or reduce fragmentation, particularly in programs where many small sized memory instances are used.
+Tbman represents a dedicated management layer. It uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution. Multiple pools are managed in a btree. When the client (your code) requests or returns small-medium sized memory instances, tbman dispatches/recollects pool memory accordingly without initiating system requests. System requests are executed infrequently in order to acquire a new pool or return an empty pool. This offloads the system manager significantly. Compared to always using system calls it can speed up overall processing and/or reduce fragmentation, particularly in programs where many small sized memory instances are used.
 
-Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely to mess up the manager itself and can be more easily tracked down.
+Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely messing up the manager itself and can therefore more easily be tracked down.
 
 A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick (O(1) complexity) binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
 
