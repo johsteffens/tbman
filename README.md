@@ -264,6 +264,28 @@ Although this sounds like a no-brainer, it actually goes beyond the standard C p
 
 *Note that most modern platforms employ a flat memory model. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic. On that model tbman would not work correctly.*
 
+### Leak Detection
+Some debugging tools (e.g. [valgrind](http://www.valgrind.org)) can detect memory leaks in a program. Forgetting to free memory you allocated using tbman represents a leak. However, since tbman_close() returns all [tbman-pools](#anchor_block-pooling-layer) to the system, such a leak might remain undetected by a debugging tool, because it only analyzes your program's interaction with the system.
+
+In order to reliably detect all memory leaks in your program, check tbman_total_granted_space() before closing tbman:
+
+**Example:**
+```C 
+int main( int argc, char* argv[] )
+{
+   tbman_open();
+   
+   ... // my program
+   
+   if( tbman_total_granted_space() > 0 )
+   {
+      fprintf( stderr, "Memory leak of %zu bytes detected.", tbman_total_granted_space() );
+   }
+   tbman_close();    
+   return my_exit_state;
+}
+```
+
 <a name="anchor_how_it_works_internally"></a>
 ## How it works internally
 
@@ -273,7 +295,7 @@ Tbman represents a dedicated management layer. It uses "conservative" memory poo
 
 Each memory instance is associated with an internal node controlled by tbman. The manager dedicates separate memory areas for node-control and user space (== memory space used by the client). The content of user space does not affect node management. Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory) are less likely to mess up the manager itself and can be more easily tracked down.
 
-A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
+A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick (O(1) complexity) binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
 
 When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
 
