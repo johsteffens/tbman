@@ -32,7 +32,7 @@ in C and C++ code.
 
 <a name="anchor_benefits"></a>
 ## Benefits
-* Very fast. [*Easily verify this yourself.*](#anchor_quick_evaluation)
+* Very fast. ([*You can easily verify this yourself.*](#anchor_quick_evaluation))
 * Low fragmentation of system memory.
 * Few system calls.
 * [Automatic alignment](#anchor_automatic_alignment) even for SIMD data types.
