@@ -202,7 +202,7 @@ printf( "%s\n", my_string );
 // Possible output: ====###
 ```
 
-<a name="diagnostic_features"></a>
+<a name="anchor_diagnostic_features"></a>
 ### Diagnostic Features
 Tbman offers a few features for advanced memory analysis. They are useful for debugging, ensuring memory integrity or even developing a garbage-collection scheme.
 
