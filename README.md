@@ -333,7 +333,7 @@ Below are some side effects you should be aware of. We believe they are tolerabl
 Tbman reserves and returns system memory in larger chunks to offload the system. That means that the memory your application reserves at a given time is likely higher than if you use system functions directly.
 
 ### Excess Memory
-Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this overhead tends to average around 10% ... 30% of the requested memory.
+Tbman organizes memory instances into slots with a predefined size distribution. For an allocation request, the best fitting slot is selected and the full slot-size is [granted](#anchor_granted_amount). If you do not need that extra amount, it is wasted. Tests have shown that in realistic situations this overhead tends to average around 10% ... 30% of the requested memory.
 
 *Note that also other memory managers reserve excess memory and/or render memory sections temporarily unusable (e.g. due to fragmentation). Which manager is most efficient depends on the use case.*
 
