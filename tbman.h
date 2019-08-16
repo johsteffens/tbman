@@ -134,17 +134,34 @@ static inline void tbman_s_nfree( tbman_s* o, void* current_ptr, size_t current_
     tbman_s_nalloc( o, current_ptr, current_size, 0, NULL );
 }
 
-/// returns currently granted space for a specified memory instance (thread-safe)
+/**********************************************************************************************************************/
+/// Diagnostics
+
+/// Returns currently granted space for a specified memory instance (thread-safe)
 size_t tbman_granted_space(               const void* current_ptr );
 size_t tbman_s_granted_space( tbman_s* o, const void* current_ptr );
 
-/// returns total of currently granted space (thread-safe)
+/// Returns total of currently granted space (thread-safe)
 size_t tbman_total_granted_space( void );
 size_t tbman_s_total_granted_space( tbman_s* o );
+
+/// Returns number of open allocation instances (thread-safe)
+size_t tbman_total_instances( void );
+size_t tbman_s_total_instances( tbman_s* o );
+
+/** Iterates through all open instances and calls 'callback' per instance (thread-safe)
+ *  The callback function may change the manager's state.
+ *  Only instances which where open at the moment of entering 'bcore_tbman_s_for_each_instance' are iterated.
+ *  While 'bcore_tbman_s_for_each_instance' executes, any instance closed or newly opened will not change the iteration.
+ */
+void tbman_for_each_instance(               void (*cb)( void* arg, void* ptr, size_t space ), void* arg );
+void tbman_s_for_each_instance( tbman_s* o, void (*cb)( void* arg, void* ptr, size_t space ), void* arg );
 
 /// prints internal status to stdout (use only for debugging/testing - not thread-safe)
 void print_tbman_status(               int detail_level );
 void print_tbman_s_status( tbman_s* o, int detail_level );
+
+/**********************************************************************************************************************/
 
 #ifdef __cplusplus
    }

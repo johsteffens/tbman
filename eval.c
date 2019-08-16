@@ -29,13 +29,39 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <math.h>
 #include <time.h>
 
 #include "tbman.h"
 
+// ---------------------------------------------------------------------------------------------------------------------
+/// Error messages
+
+void eval_wrnv( const char* format, va_list args )
+{
+    vfprintf( stderr, format, args );
+    fprintf( stderr, "\n" );
+}
+
+void eval_err( const char* format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    eval_wrnv( format, args );
+    va_end( args );
+    abort();
+}
+
+/// same purpose as assert() but cannot be switched off via NDEBUG; typically used in selftests
+#define ASSERT( condition ) if( !(condition) ) eval_err( "assertion '%s' failed in function %s (%s line %i)\n", #condition, __func__, __FILE__, __LINE__ )
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /// function pointer to generalized alloc function
 typedef void* (*fp_alloc)( void* current_ptr, size_t current_bytes, size_t requested_bytes, size_t* granted_bytes );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /** Xor Shift Generator.
  *  The random generator below belongs to the family of xorshift generators
@@ -46,12 +72,14 @@ typedef void* (*fp_alloc)( void* current_ptr, size_t current_bytes, size_t reque
  *
  *  (Not suitable for cryptographic purposes)
  */
-static inline uint32_t xsg_u2(  uint32_t rval )
+static inline uint32_t xsg_u2( uint32_t rval )
 {
     rval ^= ( rval >>  7 );
     rval ^= ( rval << 25 );
     return rval ^ ( rval >> 12 );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /** Rigorous Monte Carlo based Memory Manager Test.
  *
@@ -376,6 +404,8 @@ void alloc_challenge
     free( data_table );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 // generalized alloc function purely based on stdlib
 static inline void* external_alloc( void* current_ptr, size_t requested_bytes, size_t* granted_bytes )
 {
@@ -405,17 +435,75 @@ static inline void* external_alloc( void* current_ptr, size_t requested_bytes, s
     return current_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 // generalized alloc function purely based on stdlib
 static inline void* external_nalloc( void* current_ptr, size_t current_bytes, size_t requested_bytes, size_t* granted_bytes )
 {
     return external_alloc( current_ptr, requested_bytes, granted_bytes );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 // internal alloc without passing current_bytes
 static inline void* tbman_nalloc_no_current_bytes( void* current_ptr, size_t current_bytes, size_t requested_bytes, size_t* granted_bytes )
 {
     return tbman_alloc( current_ptr, requested_bytes, granted_bytes );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+/** Test of tbman diagnostic features */
+
+typedef struct diagnostic_s { tbman_s* man; void** ptr_arr; size_t* spc_arr; size_t size; } diagnostic_s;
+
+static void tbman_s_diagnostic_test_callback( void* arg, void* ptr, size_t space )
+{
+    diagnostic_s* d = arg;
+    int found = false;
+    for( size_t i = 0; i < d->size; i++ )
+    {
+        if( ptr == d->ptr_arr[ i ] )
+        {
+            found = true;
+            ASSERT( space == d->spc_arr[ i ] );
+        }
+    }
+    ASSERT( found );
+    tbman_s_alloc( d->man, ptr, 0, NULL );
+}
+
+static void tbman_s_diagnostic_test( void )
+{
+    diagnostic_s diag;
+    diag.man     = tbman_s_open();
+    diag.size    = 1000;
+    diag.ptr_arr = malloc( sizeof( void* ) * diag.size );
+    diag.spc_arr = malloc( sizeof( size_t ) * diag.size );
+
+    uint32_t rval = 1234;
+
+    for( size_t i = 0; i < diag.size; i++ )
+    {
+        rval = xsg_u2( rval );
+        size_t size = rval % 20000;
+        diag.ptr_arr[ i ] = tbman_s_alloc( diag.man, NULL, size, &diag.spc_arr[ i ] );
+    }
+
+    ASSERT( tbman_s_total_instances( diag.man ) == diag.size );
+
+    // the callback function frees memory
+    tbman_s_for_each_instance( diag.man, tbman_s_diagnostic_test_callback, &diag );
+
+    ASSERT( tbman_s_total_granted_space( diag.man ) == 0 );
+    ASSERT( tbman_s_total_instances(     diag.man ) == 0 );
+
+    free( diag.ptr_arr );
+    free( diag.spc_arr );
+
+    tbman_s_close( diag.man );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void tbman_test( void )
 {
@@ -428,30 +516,35 @@ void tbman_test( void )
 
     printf( "Memory Manager Evaluation:\n");
     {
-        printf( "\nmalloc, free, realloc (stdlib):\n");
+        printf( "\nmalloc, free, realloc (stdlib) ...\n");
         alloc_challenge( external_nalloc, table_size, cycles, max_alloc, seed, true, verbose );
     }
 
     {
-        printf( "\ntbman_malloc, tbman_free, tbman_realloc:\n");
+        printf( "\ntbman_malloc, tbman_free, tbman_realloc ...\n");
         alloc_challenge( tbman_nalloc_no_current_bytes, table_size, cycles, max_alloc, seed, true, verbose );
     }
 
     {
-        printf( "\ntbman_malloc, tbman_nfree, tbman_nrealloc:\n");
+        printf( "\ntbman_malloc, tbman_nfree, tbman_nrealloc ...\n");
         alloc_challenge( tbman_nalloc, table_size, cycles, max_alloc, seed, true, verbose );
     }
 
+    {
+        printf( "\ndiagnostic test ... ");
+        tbman_s_diagnostic_test();
+        printf( "success!\n");
+    }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 int main( void )
 {
     tbman_open();
     tbman_test();
-
-    if( tbman_total_granted_space() > 0 )
-    {
-        fprintf( stderr, "Memory leak of %zu bytes detected.\n", tbman_total_granted_space() );
-    }
     tbman_close();
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+

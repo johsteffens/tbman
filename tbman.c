@@ -237,6 +237,13 @@ static size_t token_manager_s_total_alloc( const token_manager_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+static size_t token_manager_s_total_instances( const token_manager_s* o )
+{
+    return o->stack_index;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t token_manager_s_total_space( const token_manager_s* o )
 {
     return o->pool_size + o->stack_size * sizeof( uint16_t );
@@ -244,7 +251,19 @@ static size_t token_manager_s_total_space( const token_manager_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void print_token_manager_s_status( const token_manager_s* o, int detail_level )
+static void token_manager_s_for_each_instance( token_manager_s* o, void (*cb)( void* arg, void* ptr, size_t space ), void* arg )
+{
+    if( !cb ) return;
+    for( size_t i = 0; i < o->stack_index; i++ )
+    {
+        size_t token = o->token_stack[ i ];
+        cb( arg, ( uint8_t* )o + token * o->block_size, o->block_size );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void print_token_manager_s_status( const token_manager_s* o, int detail_level )
 {
     if( detail_level <= 0 ) return;
     printf( "    pool_size:   %zu\n",  o->pool_size );
@@ -345,7 +364,7 @@ static void block_manager_s_discard( block_manager_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child );
+static void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child );
 
 static void* block_manager_s_alloc( block_manager_s* o )
 {
@@ -467,6 +486,18 @@ static size_t block_manager_s_total_alloc( const block_manager_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+static size_t block_manager_s_total_instances( const block_manager_s* o )
+{
+    size_t sum = 0;
+    for( size_t i = 0; i < o->size; i++ )
+    {
+        sum += token_manager_s_total_instances( o->data[ i ] );
+    }
+    return sum;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t block_manager_s_total_space( const block_manager_s* o )
 {
     size_t sum = 0;
@@ -475,6 +506,13 @@ static size_t block_manager_s_total_space( const block_manager_s* o )
         sum += token_manager_s_total_space( o->data[ i ] );
     }
     return sum;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void block_manager_s_for_each_instance( block_manager_s* o, void (*cb)( void* arg, void* ptr, size_t space ), void* arg )
+{
+    for( size_t i = 0; i < o->size; i++ ) token_manager_s_for_each_instance( o->data[ i ], cb, arg );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -603,6 +641,20 @@ void tbman_s_init( tbman_s* o, size_t pool_size, size_t min_block_size, size_t m
 
 void tbman_s_down( tbman_s* o )
 {
+    size_t leaking_bytes = tbman_s_total_granted_space( o );
+
+    if( leaking_bytes > 0 )
+    {
+        size_t leaking_instances = tbman_s_total_instances( o );
+        fprintf
+        (
+            stderr,
+            "TBMAN WARNING: Detected %zu instances with a total of %zu bytes leaking space.\n",
+            leaking_instances,
+            leaking_bytes
+        );
+    }
+
     pthread_mutex_lock( &o->mutex );
     if( o->data )
     {
@@ -661,7 +713,7 @@ void tbman_s_discard( tbman_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child )
+static void tbman_s_lost_alignment( struct tbman_s* o, const block_manager_s* child )
 {
     o->aligned = false;
 }
@@ -871,14 +923,45 @@ void* tbman_s_nalloc( tbman_s* o, void* current_ptr, size_t current_size, size_t
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static size_t tbman_s_total_external_alloc( const tbman_s* o )
+static size_t tbman_s_external_total_alloc( const tbman_s* o )
 {
     return btree_ps_s_sum( o->external_btree, NULL, NULL );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static size_t tbman_s_total_internal_alloc( const tbman_s* o )
+static void ext_count( void* arg, btree_ps_key_t key, btree_ps_val_t val ) { *(size_t*)arg += 1; }
+
+static size_t tbman_s_external_total_instances( const tbman_s* o )
+{
+    size_t size = 0;
+    btree_ps_s_run( o->external_btree, ext_count, &size );
+    return size;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+typedef struct ext_for_instance_arg
+{
+    void (*cb)( void* arg, void* ptr, size_t space );
+    void* arg;
+} ext_for_instance_arg;
+
+static void ext_for_instance( void* arg, btree_ps_key_t key, btree_ps_val_t val )
+{
+    ext_for_instance_arg* iarg = arg;
+    iarg->cb( iarg->arg, key, val );
+}
+
+static void tbman_s_external_for_each_instance( tbman_s* o, void (*cb)( void* arg, void* ptr, size_t space ), void* arg )
+{
+    ext_for_instance_arg iarg = { .cb = cb, .arg = arg };
+    btree_ps_s_run( o->external_btree, ext_for_instance, &iarg );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static size_t tbman_s_internal_total_alloc( const tbman_s* o )
 {
     size_t sum = 0;
     for( size_t i = 0; i < o->size; i++ )
@@ -890,10 +973,32 @@ static size_t tbman_s_total_internal_alloc( const tbman_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+static size_t tbman_s_internal_total_instances( const tbman_s* o )
+{
+    size_t sum = 0;
+    for( size_t i = 0; i < o->size; i++ )
+    {
+        sum += block_manager_s_total_instances( o->data[ i ] );
+    }
+    return sum;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void tbman_s_internal_for_each_instance( tbman_s* o, void (*cb)( void* arg, void* ptr, size_t space ), void* arg )
+{
+    for( size_t i = 0; i < o->size; i++ )
+    {
+        block_manager_s_for_each_instance( o->data[ i ], cb, arg );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 static size_t tbman_s_total_alloc( const tbman_s* o )
 {
-    return tbman_s_total_external_alloc( o )
-         + tbman_s_total_internal_alloc( o );
+    return tbman_s_external_total_alloc( o )
+         + tbman_s_internal_total_alloc( o );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -911,7 +1016,7 @@ static size_t tbman_s_total_space( const tbman_s* o )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-// Global manager
+// Interface
 
 static tbman_s* tbman_s_g = NULL;
 
@@ -1019,6 +1124,71 @@ size_t tbman_total_granted_space( void )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+size_t tbman_total_instances( void )
+{
+    ASSERT_GLOBAL_INITIALIZED();
+    return tbman_s_total_instances( tbman_s_g );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+size_t tbman_s_total_instances( tbman_s* o )
+{
+    pthread_mutex_lock( &o->mutex );
+    size_t count = 0;
+    count += tbman_s_external_total_instances( o );
+    count += tbman_s_internal_total_instances( o );
+    pthread_mutex_unlock( &o->mutex );
+    return count;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+typedef struct tbman_mnode { void* p; size_t s; } tbman_mnode;
+typedef struct tbman_mnode_arr { tbman_mnode* data; size_t size; size_t space; } tbman_mnode_arr;
+
+static void for_each_instance_collect_callback( void* arg, void* ptr, size_t space )
+{
+    assert( arg );
+    tbman_mnode_arr* arr = arg;
+    assert( arr->size < arr->space );
+    arr->data[ arr->size ] = ( tbman_mnode ){ .p = ptr, .s = space };
+    arr->size++;
+}
+
+void tbman_s_for_each_instance( tbman_s* o, void (*cb)( void* arg, void* ptr, size_t space ), void* arg )
+{
+    if( !cb ) return;
+    size_t size = tbman_s_total_instances( o );
+    if( !size ) return;
+
+    tbman_mnode_arr arr;
+    arr.data  = malloc( sizeof( tbman_mnode ) * size );
+    arr.space = size;
+    arr.size  = 0;
+
+    pthread_mutex_lock( &o->mutex );
+    tbman_s_external_for_each_instance( o, for_each_instance_collect_callback, &arr );
+    tbman_s_internal_for_each_instance( o, for_each_instance_collect_callback, &arr );
+    pthread_mutex_unlock( &o->mutex );
+
+    assert( arr.size == arr.space );
+
+    for( size_t i = 0; i < size; i++ ) cb( arg, arr.data[ i ].p, arr.data[ i ].s );
+
+    free( arr.data );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void tbman_for_each_instance( void (*cb)( void* arg, void* ptr, size_t space ), void* arg )
+{
+    ASSERT_GLOBAL_INITIALIZED();
+    tbman_s_for_each_instance( tbman_s_g, cb, arg );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 // not thread-safe
 void print_tbman_s_status( tbman_s* o, int detail_level )
 {
@@ -1032,8 +1202,8 @@ void print_tbman_s_status( tbman_s* o, int detail_level )
     printf( "min_block_size:         %zu\n", o->size > 0 ? o->data[ 0 ]->block_size : 0 );
     printf( "max_block_size:         %zu\n", o->size > 0 ? o->data[ o->size - 1 ]->block_size : 0 );
     printf( "aligned:                %s\n",  o->aligned ? "true" : "false" );
-    printf( "total external granted: %zu\n", tbman_s_total_external_alloc( o ) );
-    printf( "total internal granted: %zu\n", tbman_s_total_internal_alloc( o ) );
+    printf( "total external granted: %zu\n", tbman_s_external_total_alloc( o ) );
+    printf( "total internal granted: %zu\n", tbman_s_internal_total_alloc( o ) );
     printf( "total internal used:    %zu\n", tbman_s_total_space( o ) );
     if( detail_level > 1 )
     {

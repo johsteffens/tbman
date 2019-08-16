@@ -4,7 +4,7 @@
    * [What it is](#anchor_what_it_is)
    * [Benefits](#anchor_benefits)
    * [How to use it](#anchor_how_to_use_it)
-   * [Detailed description](#anchor_features)
+   * [Detailed Description](#anchor_features)
       * [Basics](#anchor_basic)
       * [Faster collection](#anchor_faster_collection)
       * [One function for everything](#anchor_one_function_for_everything)
@@ -32,15 +32,16 @@ in C and C++ code.
 
 <a name="anchor_benefits"></a>
 ## Benefits
-* Very fast. [*You can easily verify this yourself.*](#anchor_quick_evaluation)
-* [Automatic alignment](#anchor_automatic_alignment) even for extended data types. *(E.g. SIMD types such as `int32x4_t`)*
-* Fewer system calls.
+* Very fast. [*Easily verify this yourself.*](#anchor_quick_evaluation)
+* [Automatic alignment](#anchor_automatic_alignment) even for SIMD data types.
 * Low fragmentation of system memory.
-* [Easy monitoring](#anchor_memory_tracking) of total memory usage. *(E.g. for leak detection)*
-* Optional communicaton of [actually granted amounts](#anchor_granted_amount). *(Useful for dynamic arrays)*
+* Few system calls.
+* [Automatic leak detection.](#anchor_integrated_leak_detection)
+* [Diagnostic features.](#anchor_diagnostic_features)
+* [Feedback of granted memory.](#anchor_granted_amount)
 * Platform independence:
-   * The code can be built on any platform satisfying the [build requirements](#anchor_build_requirements) below.
-   * It has been tested on Intel and ARM platforms.
+     * Supports platforms satisfying the [build requirements](#anchor_build_requirements) below.
+     * Tested on Intel and ARM platforms.
 
 <a name="anchor_how_to_use_it"></a>
 ## How to use it
@@ -48,46 +49,49 @@ in C and C++ code.
 
 <a name="anchor_build_requirements"></a>
 ### Requirements/Dependencies
-   * Compiler suite supporting the C11 standard (e.g. gcc, clang).
-   * Compiler options: `-std=c11 -O3`  (or compatible settings)
+   * Compiler supporting the C11 standard (e.g. gcc, clang).
+   * Compiler options: `-std=c11`, `-O3` for max speed; (or compatible settings)
    * Linker options: `-lm -lpthread` (or compatible settings)
-   * Some POSIX compliance:
-      *  **pthread**: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`. If pthread is not available and you can dispense with thread safety, the code `pthread_mutex_...` can be removed without impacting the remaining functionality. A better solution, though, is replacing `pthread_mutex` with a native mutex of your target platform.
-      * **Memory Model**: Posix systems usually provide a [flat memory model](#memory_model), which is expected by tbman.
-      * **Linux, Android, Darwin (and related OS)**: These should offer sufficient compliance.
-      * **Windows**: Building tbman on Windows likely needs a workaround. Here are three possibilities:
+   * **POSIX**: Out of the box, tbman relies on two features, which are normally available on POSIX compliant systems
+      * [Flat Memory Model](#memory_model).
+      * Library pthread: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`.
+      * Platforms with sufficient POSIX compliance: **Linux, Android, Darwin (and related OS)**
+
+   * **pthread missing**:
+      * **Windows**: Three different possibilities:
          * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
+         * In `tbman.c`: Replace pthred-locks by native locks; then build without pthread.
          * Windows 10: Provides an optional Linux-Subsystem.
-         * In `tbman.c`: Replace pthread-locks by native locks; then build without pthread.
-      
+
 ### In your workspace
-* Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
-* In your code:
-  * `#include "tbman.h"`
-  * Call once `tbman_open();` at the beginning or your program. *(E.g. first in `main()`)*
-  * Use `tbman_*` - functions anywhere.
-  * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`)*
+   * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
+   * In your code:
+      * `#include "tbman.h"`
+      * Call once `tbman_open();` at the beginning or your program. *(E.g. first in `main()`)*
+      * Use `tbman_*` - functions anywhere.
+      * Call once `tbman_close();` at the end or your program. *(E.g. last in `main()`)*
 
 ### C++
-In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators, taking control over the part concerned with memory allocation.
+In object oriented C++ programming, the direct use of `malloc`, `realloc` or `free` is discouraged in favor of using operators `new` and `delete`, which take care of object construction/destruction. However, you can overload these operators. This gives you control over the part concerned with memory allocation.
 
 **Example:**
+
+If you add the code below to your program, operators `new` and `delete` will work as intended but use tbman for allocating and freeing memory.
+
 ```C++
 void* operator new( size_t size ) { return tbman_malloc( size ); }
-void operator detete( void* p ) { tbman_free( p ); }
+void operator delete( void* p ) { tbman_free( p ); }
 ```
-   
-Here is an external article with more details about overloading allocation operators:<br>
-http://www.modernescpp.com/index.php/overloading-operator-new-and-delete
 
 <a name="anchor_quick_evaluation"></a>
-### Quick evaluation
+### Quick Evaluation
 
 `eval.c` is an evaluation program simulating realistic runtime conditions for a memory manager. It verifies correct functionality and assesses the processing speed. It compares the performance of stdlib functions with tbman functions. You can quickly run it yourself:
+
    * Enter folder with source files and run: `gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out`
 
 <a name="anchor_features"></a>
-## Detailed description
+## Detailed Description
 
 <a name="anchor_basic"></a>
 ### Basics
@@ -100,19 +104,19 @@ void  tbman_free(    void* ptr              ); // freeing
 Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
 <br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
 
-Tbman must be initialized once before usage. It should also be properly closed at the end of the program. These functions take care of it:
+Tbman must be initialized once before usage. It should also be properly closed at the end of the program. These two functions take care of it:
 ```C
 void tbman_open( void );  // initializes tbman
 void tbman_close( void ); // closes tbman
 ```
 **Example:**
-```C 
+```C
 int main( int argc, char* argv[] )
 {
    tbman_open();
-   
+
    ... // my program
-   
+
    tbman_close();
    return my_exit_state;
 }
@@ -120,19 +124,22 @@ int main( int argc, char* argv[] )
 
 <a name="anchor_faster_collection"></a>
 ### Faster collection
-If you free or reallocate memory and know the previoulsy allocated amount, you can further speed up processing by telling tbman about the currently allocated size using `tbman_nrealloc` for `tbman_realloc` and `tbman_nfree` for `tbman_free`. This helps the manager find the corresponding node for the memory instance.
+If you free or reallocate memory and know the previoulsy allocated amount, you can further speed up processing by telling tbman about the currently allocated size using `tbman_nrealloc` and `tbman_nfree`. This helps the manager find the corresponding node for the memory instance.
 
 ```C
-void* tbman_nrealloc( void* current_ptr, size_t current_size, size_t new_size );
-void  tbman_nfree(    void* current_ptr, size_t current_size );
+// realloc with size communication
+void* tbman_nrealloc( void* current_ptr, size_t current_size, size_t new_size ); 
+
+// free with size communication
+void  tbman_nfree( void* current_ptr, size_t current_size );
 ```
 `current_size` must hold either the requested amount or the [granted amount](#anchor_granted_amount) for the memory instance addressed by `current_ptr`.
 
 <a name="anchor_one_function_for_everything"></a>
 ### One function for everything
-Alternatively, you can use one of the following two functions for basic manager functionality as well as some special features of tbman.
+Alternatively, you can use one of the following two functions for memory management including some special features of tbman.
 
-```C 
+```C
 void* tbman_alloc(  void* current_ptr,                      size_t requested_size, size_t* granted_size );
 void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_size, size_t* granted_size );
 ```
@@ -158,33 +165,32 @@ Pointer to new memory instance for pure allocation or reallocation. Returns `NUL
 
 <a name="anchor_automatic_alignment"></a>
 ### Automatic alignment
-Tbman aligns the memory instance. This covers standard C/C++ data types `char, short, int, float, double, etc` and also larger types such as `int32x4_t, float32x4_t, etc`, which are typically used for SIMD-extensions such as `SSE, AVX, NEON, etc`.
-
-In order to achieve this, tbman analyzes the requested size. If you allocate an instance or array of type `my_type` with `sizeof( my_type )` being a power of two not larger than [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. More generally: When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43). 
+Tbman aligns the memory instance. This covers all standard C/C++ data types `char, short, int, float, double, etc` and also larger types such as `int32x4_t, float32x4_t, etc`, which are typically used for SIMD-extensions such as `SSE, AVX, NEON, etc`.
 
 **Example:**
-```C 
+```C
 int32x4_t* my_data = tbman_malloc( sizeof( int32x4_t ) * 10 ); // aligned array of 10 x int32x4_t
 ```
 
 <a name="anchor_granted_amount"></a>
 ### Granted amount
-For design reasons tbman might find no proper use for some space immediately following your requested memory block. In that case it grants you that extra space, appending it to your request. You may use that granted space as if you had requested that larger space in the first place. 
+For design reasons tbman might find no proper use for some space immediately following your requested memory block. In that case it grants you that extra space, appending it to your request. You may use the granted space as if you had requested it in the first place.
 <br><sub>*(Note: Tbman never grants less than requested.)*</sub>
 
-Knowing about the the granted amount can be useful e.g. when optimizing the behavior of dynamic arrays. The following functions communicate the granted amount in bytes:
+Knowing about the the granted amount can be useful e.g. when optimizing code for dynamic arrays.
 
-   * Explicit query for the granted amount for an already existing memory instance:
-```C 
+Function `tbman_alloc` lets you allocate with the [granted amount communicated](#anchor_one_function_for_everything). Uou can retrieve the granted amount for a given instance using function `tbman_granted_space`:
+
+```C
+// Allocation with granted amount communicated.
+void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
+
+// Explicit query for the granted amount from an already existing memory instance
 size_t tbman_granted_space( const void* ptr );
 ```
 
-   * [Allocation with granted amount communicated](#anchor_one_function_for_everything):
-```C 
-void* tbman_alloc( void* current_ptr, size_t requested_size, size_t* granted_size );
-```
 **Example:**
-```C 
+```C
 size_t requested_space = 5;
 size_t granted_space;
 char* my_string = tbman_alloc( NULL, requested_space, &granted_space );
@@ -196,25 +202,88 @@ printf( "%s\n", my_string );
 // Possible output: ====###
 ```
 
-<a name="anchor_memory_tracking"></a>
-### Memory Tracking
-You can query the total of tbman-allocated memory at any point in your program. The following function does this:
-```C 
-size_t tbman_total_granted_space( void );
-```
-Possible use-cases: 
-   * Assessing the memory footprint of a program, sections thereof or objects. 
-   * Detecting and debugging memory leaks.
+<a name="diagnostic_features"></a>
+### Diagnostic Features
+Tbman offers a few features for advanced memory analysis. They are useful for debugging, ensuring memory integrity or even developing a garbage-collection scheme.
+
+<a name="anchor_integrated_leak_detection"></a>
+#### Integrated Leak Detection
+Functions `tbman_close()` and `tbman_s_close()` check for memory instances not yet being freed. In case, a message is send to stderr.
 
 **Example:**
-```C 
-size_t prior_space = tbman_total_granted_space();
-
-... // some code to be tested for leaks
-
-size_t memory_leak = tbman_total_granted_space() - prior_space;
-if( memory_leak > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected.\n", memory_leak );
+```C
+tbman_open();
+// we are deliberately leaking some memory
+tbman_malloc( 13 );
+tbman_malloc( 7 );
+tbman_close();
+/*
+This will produce a message by tbman_close() like this:
+TBMAN WARNING: Detected 2 instances with a total of 24 bytes leaking space.
+*/
 ```
+
+<a name="anchor_memory_tracking"></a>
+#### Memory Tracking
+You can query the total of tbman-allocations at any point in your program. The following functions do this:
+```C
+size_t tbman_total_instances( void );     // returns the current number of allocations (memory instances)
+size_t tbman_total_granted_space( void ); // returns the number of bytes currently allocated
+```
+Possible use-cases:
+
+   * Hunting down memory leaks.
+   * Assessing the memory footprint of a program, sections thereof or of specific objects.
+
+**Example:**
+```C
+size_t prior_space = tbman_total_granted_space();
+size_t prior_insts = tbman_total_instances();
+
+... // section to be tested for leaks
+
+size_t leaking_space = tbman_total_granted_space() - prior_space;
+size_t leaking_insts = tbman_total_instances() - prior_insts;
+if( leaking_insts > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected. %zu instances were not freed.\n", leaking_space, leaking_insts );
+```
+
+<a name="anchor_memory_tracking"></a>
+#### Iterating through instances
+The following function lets you iterate through all instances currently allocated:
+```C
+void tbman_for_each_instance( void (*cb)( void* arg, void* ptr, size_t space ), void* arg );
+```
+
+It calls `cb` for each instance active at the time of calling `tbman_for_each_instance`.
+`cb` is a /callback function/.
+
+   * **arg** Custom argument passed through to each callback.
+   * **ptr** Address of the memory instance
+   * **space** Number of bytes granted to the instance.
+
+It is possible to change tbman's state inside a callback function. E.g. The callback function may free or allocate memory. Keep in mind, though, that all instances, producing a callback, are determined before executing the first callback. Freeing or allocating inside a callback will therefore not affect the order. It will only affect the next call to `tbman_for_each_instance`.
+
+**Example:**
+
+This is a trivial garbage collector simply freeing all remaining open instances and counting them 
+
+```C
+// frees the instance and increments a counter
+void free_instance_callback( void* arg, void* ptr, size_t space )
+{
+    tbman_nalloc( ptr, space, 0, NULL );
+    if( arg ) (*(size_t*)arg)++;
+} 
+```
+
+```C
+... // somewhere in code
+size_t count = 0;
+tbman_for_each_instance( free_instance_callback, &count );
+printf( "%zu instances were freed.\n", count );
+
+```
+
 <a name="anchor_thread_safety"></a>
 ### Thread safety
 Tbman is thread safe: The interface functions can be called any time from any thread simultaneously. Memory allocated in one thread can be freed in any other thread.
@@ -298,6 +367,10 @@ Each memory instance is associated with an internal node controlled by tbman. Th
 A special design feature is the combination of associative tokens with a special alignment scheme. It provides quick (O(1) complexity) binding of memory address and manager-nodes. This method ensures very low latency for allocation and collection and it gives this manager its name: tbman = token-block-manager.
 
 When the client requests a large memory instance, where pooling would be wasteful, tbman falls back to using a direct system call. However, it [keeps track](#anchor_memory_tracking) of all memory.
+
+### Memory alignment
+Tbman analyzes the requested size. If you allocate an instance or array of type `my_type` with `sizeof( my_type )` being a power of two not larger than [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43), then the memory block is alinged to `sizeof( my_type )`. More generally: When requesting memory of _**s**_ bytes and _**s**_ can be expressed as product of two positive integers _**s**_ = _**m**\***n**_ such that _**m**_ is a power of 2, then the returned memory is aligned to the lesser of _**m**_ and [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43).
+
 
 <a name="anchor_motivation"></a>
 ## Motivation

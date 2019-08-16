@@ -4,6 +4,7 @@ tbman.workspace.layout
 tbman.layout
 tbman.depend
 *.xml
+*.out
 dev
 bin
 obj
