@@ -33,9 +33,9 @@ in C and C++ code.
 <a name="anchor_benefits"></a>
 ## Benefits
 * Very fast. [*Easily verify this yourself.*](#anchor_quick_evaluation)
-* [Automatic alignment](#anchor_automatic_alignment) even for SIMD data types.
 * Low fragmentation of system memory.
 * Few system calls.
+* [Automatic alignment](#anchor_automatic_alignment) even for SIMD data types.
 * [Automatic leak detection.](#anchor_integrated_leak_detection)
 * [Diagnostic features.](#anchor_diagnostic_features)
 * [Feedback of granted memory.](#anchor_granted_amount)
