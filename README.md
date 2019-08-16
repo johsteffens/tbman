@@ -346,15 +346,14 @@ Although this sounds like a no-brainer, it actually goes beyond the standard C p
 
 *Note that most modern platforms employ a flat memory model. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic. On that model tbman would not work correctly.*
 
-### Leak Detection Tools
-If you allocate memory and forget to free it, it represents a memory leak. Good programming style should not tolerate memory leaks of any kind.
+### Debugging Tools
+Certain debugging tools (e.g. [valgrind](http://www.valgrind.org)) can analyze the memory integrity of a program. One of the methods employed is capturing interactions of the program with the system.
 
-Some debugging tools (e.g. [valgrind](http://www.valgrind.org)) can detect memory leaks in a program.
-However, since `tbman_close()` returns all [tbman-pools](#anchor_block-pooling-layer) to the system, a leak might remain undetected by a debugging tool, because it can only analyze your program's interaction with the system.
+Since tbman represents an intermediate layer between your program and the system, effectively reducing system interactions, the tool captures less activity. For example, it might not recognize all the boundaries of a single tbman-allocation and can therefore not verify the validity of all types of block-access by the program. Since `tbman_close()` returns all [tbman-pools](#anchor_block-pooling-layer) to the system, the tool might also not detect all possible memory leaks.
 
-Function `tbman_close` checks for leaks and reports them to stderr, which should alleviate the side effect for most practical purposes.
+Function `tbman_close` [checks for leaks](#anchor_integrated_leak_detection) and reports them to stderr, which should alleviate the last side effect for most practical purposes.
 
-However, you can can create a custom-check in your program by testing `tbman_total_granted_space()` before closing tbman:
+You can can also create a custom-check for leaks in your program by testing `tbman_total_granted_space()` before closing tbman:
 
 **Example:**
 ```C 
