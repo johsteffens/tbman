@@ -10,7 +10,7 @@
       * [One function for everything](#anchor_one_function_for_everything)
       * [Automatic alignment](#anchor_automatic_alignment)
       * [Granted amount](#anchor_granted_amount)
-      * [Memory tracking](#anchor_memory_tracking)
+      * [Diagnostic Features](#anchor_diagnostic_features)
       * [Thread safety](#anchor_thread_safety)
       * [Multiple managers](#anchor_multiple_managers)
       * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
@@ -208,7 +208,8 @@ Tbman offers a few features for advanced memory analysis. They are useful for de
 
 <a name="anchor_integrated_leak_detection"></a>
 #### Integrated Leak Detection
-Functions `tbman_close()` and `tbman_s_close()` check for memory instances not yet being freed. In case, a message is send to stderr.
+Functions `tbman_close()` and `tbman_s_close()` check for leaking memory instances. (Instances not being freed). 
+If any are found, a message is send to stderr.
 
 **Example:**
 ```C
@@ -227,8 +228,11 @@ TBMAN WARNING: Detected 2 instances with a total of 24 bytes leaking space.
 #### Memory Tracking
 You can query the total of tbman-allocations at any point in your program. The following functions do this:
 ```C
-size_t tbman_total_instances( void );     // returns the current number of allocations (memory instances)
-size_t tbman_total_granted_space( void ); // returns the number of bytes currently allocated
+// returns the current number of allocations (memory instances)
+size_t tbman_total_instances( void );
+
+// returns the number of bytes currently allocated
+size_t tbman_total_granted_space( void ); 
 ```
 Possible use-cases:
 
@@ -244,31 +248,40 @@ size_t prior_insts = tbman_total_instances();
 
 size_t leaking_space = tbman_total_granted_space() - prior_space;
 size_t leaking_insts = tbman_total_instances() - prior_insts;
-if( leaking_insts > 0 ) fprintf( stderr, "Memory leak of %zu bytes detected. %zu instances were not freed.\n", leaking_space, leaking_insts );
+if( leaking_insts > 0 )
+{
+    fprintf( stderr, 
+        "Memory leak of %zu bytes detected. %zu instances were not freed.\n", 
+        leaking_space, 
+        leaking_insts );
+}
 ```
 
 <a name="anchor_memory_tracking"></a>
 #### Iterating through instances
 The following function lets you iterate through all instances currently allocated:
 ```C
-void tbman_for_each_instance( void (*cb)( void* arg, void* ptr, size_t space ), void* arg );
+void tbman_for_each_instance( 
+    void (*cb)( void* arg, void* ptr, size_t space ), 
+    void* arg );
 ```
 
-It calls `cb` for each instance active at the time of calling `tbman_for_each_instance`.
-`cb` is a /callback function/.
+`cb` is a *callback function*. It is called for each instance active at the time of calling `tbman_for_each_instance`.
+
+**Arguments:**
 
    * **arg** Custom argument passed through to each callback.
    * **ptr** Address of the memory instance
    * **space** Number of bytes granted to the instance.
 
-It is possible to change tbman's state inside a callback function. E.g. The callback function may free or allocate memory. Keep in mind, though, that all instances, producing a callback, are determined before executing the first callback. Freeing or allocating inside a callback will therefore not affect the order. It will only affect the next call to `tbman_for_each_instance`.
+Changing tbman's state inside a callback function is allowed. E.g. The callback function may free or allocate memory. Keep in mind, though, that all instances, producing a callback, are determined before executing the first callback. Freeing or allocating inside a callback will therefore not affect the callback-order. It will only affect the next call to `tbman_for_each_instance`.
 
 **Example:**
 
-This is a trivial garbage collector simply freeing all remaining open instances and counting them 
+A trivial garbage collector, simply freeing all remaining open instances and counting them.
 
 ```C
-// frees the instance and increments a counter
+// frees the instance assuming arg references a counter
 void free_instance_callback( void* arg, void* ptr, size_t space )
 {
     tbman_nalloc( ptr, space, 0, NULL );
@@ -333,10 +346,15 @@ Although this sounds like a no-brainer, it actually goes beyond the standard C p
 
 *Note that most modern platforms employ a flat memory model. Very old systems, like early x86 platforms, use a segmented memory model (segment:offset) where only the offset participates in pointer arithmetic. On that model tbman would not work correctly.*
 
-### Leak Detection
-Some debugging tools (e.g. [valgrind](http://www.valgrind.org)) can detect memory leaks in a program. Forgetting to free memory, which you allocated using tbman, represents a leak. However, since `tbman_close()` returns all [tbman-pools](#anchor_block-pooling-layer) to the system, such a leak might remain undetected by a debugging tool, because it only analyzes your program's interaction with the system.
+### Leak Detection Tools
+If you allocate memory and forget to free it, it represents a memory leak. Good programming style should not tolerate memory leaks of any kind.
 
-In order to reliably detect all memory leaks in your program, check `tbman_total_granted_space()` before closing tbman:
+Some debugging tools (e.g. [valgrind](http://www.valgrind.org)) can detect memory leaks in a program.
+However, since `tbman_close()` returns all [tbman-pools](#anchor_block-pooling-layer) to the system, a leak might remain undetected by a debugging tool, because it can only analyze your program's interaction with the system.
+
+Function `tbman_close` checks for leaks and reports them to stderr, which should alleviate the side effect for most practical purposes.
+
+However, you can can create a custom-check in your program by testing `tbman_total_granted_space()` before closing tbman:
 
 **Example:**
 ```C 
