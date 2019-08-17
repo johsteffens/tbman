@@ -558,7 +558,7 @@ static void print_block_manager_s_status( const block_manager_s* o, int detail_l
  *     - If the previously allocated size is available and all token managers are aligned
  *       the address of the token manager is directly calculated from the allocated address. (O(1))
  *     - Otherwise: The corresponding token-manager is determined via internal_btree from the memory-address
- *       (Olog(n) - where 'n' is the current amount of allocations in circulation.)
+ *       (O(log(n)) - where 'n' is the current amount of token managers.)
  *
  */
 typedef struct tbman_s
