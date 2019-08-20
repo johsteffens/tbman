@@ -18,7 +18,7 @@
    * [Side effects](#anchor_side_effects)
       * [Prefetching](#anchor_prefetching)
       * [Unused Memory](#anchor_unused_memory)
-      * [Memory_Model](#anchor_memory_model)
+      * [Memory Model](#anchor_memory_model)
       * [Debugging Tools](#anchor_debugging_tools)
    * [How it works internally](#anchor_how_it_works_internally)
    * [Motivation](#anchor_motivation)
@@ -223,7 +223,9 @@ In that case it grants you that extra space, appending it to your request.
 You may use the granted space as if you had requested it in the first place.
 <br><sub>*(Note: Tbman never grants less than requested.)*</sub>
 
-Knowing about the the granted amount can be useful e.g. when optimizing code for dynamic arrays.
+This feature is a special resource for optimizing speed and memory efficiency
+of objects that vary allocation size during lifetime.
+It is extensively used in [beth](https://github.com/johsteffens/beth) on dynamic arrays.
 
 Function `tbman_alloc` lets you allocate with the [granted amount communicated](#anchor_one_function_for_everything).
 You can retrieve the granted amount for a given instance using function `tbman_granted_space`:
@@ -243,11 +245,15 @@ size_t requested_space = 5;
 size_t granted_space;
 char* my_string = tbman_alloc( NULL, requested_space, &granted_space );
 // At this point granted_space >= requested_space. Using that extra space is allowed.
+
+// To visualize, we fill the requested and extra space with different characters:
 for( size_t i = 0; i < requested_space - 1; i++ ) my_string[ i ] = '=';
 for( size_t i = requested_space - 1; i < granted_space - 1; i++ ) my_string[ i ] = '#';
 my_string[ granted_space - 1 ] = 0;
+
+// Possible output:
+// ====###
 printf( "%s\n", my_string );
-// Possible output: ====###
 ```
 
 <a name="anchor_diagnostic_features"></a>
@@ -260,21 +266,21 @@ They are useful for debugging, ensuring memory integrity or even developing a ga
 ### Integrated Leak Detection
 
 Functions `tbman_close()` and `tbman_s_close()` check for leaking memory instances.
-(Instances not being freed).
+These are instances allocated but not freed before closing the manager.
 If any are found, a message is send to stderr.
 
 **Example:**
 
 ```C
 tbman_open();
-// we are deliberately leaking some memory
+
+// We are deliberately leaking some memory.
 tbman_malloc( 13 );
 tbman_malloc( 7 );
+
+// tbman_close() will produce a message by like this:
+// TBMAN WARNING: Detected 2 instances with a total of 24 bytes leaking space.
 tbman_close();
-/*
-This will produce a message by tbman_close() like this:
-TBMAN WARNING: Detected 2 instances with a total of 24 bytes leaking space.
-*/
 ```
 
 <a name="anchor_memory_tracking"></a>
