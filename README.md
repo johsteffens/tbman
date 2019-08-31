@@ -129,7 +129,8 @@ void* tbman_realloc( void* ptr, size_t size ); // reallocation
 void  tbman_free(    void* ptr              ); // freeing
 ```
 Usage and behavior is compatible to corresponding stdlib functions `malloc`, `free`, `realloc`.
-<br><sub>Exception: Should the entire system run out of available memory, tbman aborts with an error message to stderr.</sub>
+<br><sub>Exception: Should the entire system run out of available memory,
+tbman aborts with an error message to stderr.</sub>
 
 Tbman must be initialized once before usage. It should also be properly closed at the end of the program. 
 These two functions take care of it:
@@ -166,7 +167,8 @@ void* tbman_nrealloc( void* current_ptr, size_t current_size, size_t new_size );
 // free with size communication
 void  tbman_nfree( void* current_ptr, size_t current_size );
 ```
-`current_size` must hold either the requested amount or the [granted amount](#anchor_granted_memory) for the memory instance addressed by `current_ptr`.
+`current_size` must hold either the requested amount or the [granted amount](#anchor_granted_memory)
+for the memory instance addressed by `current_ptr`.
 
 <a name="anchor_one_function_for_everything"></a>
 ## One function for everything
@@ -180,25 +182,17 @@ void* tbman_nalloc( void* current_ptr, size_t current_size, size_t requested_siz
 `tbman_nalloc` works slightly faster than `tbman_alloc` but requires extra size input.
 The two functions can also be mixed; even serving the same memory instance.
 
-**Arguments**
+### Arguments
 
-   * `current_ptr` <br>
-Pointer to current memory instance for freeing or reallocating.<br>
-Set to `NULL` for pure allocation.
+| Name      | Description  |
+| :----     | :---------------------------  |
+| **`current_ptr`**    | Pointer to current memory instance for freeing or reallocating. <br> Set to `NULL` for pure allocation. |
+| **`current_size`**   | Previously requested or [granted size](#anchor_granted_memory) for freeing or reallocating a memory instance. <br> Set to `0` for pure allocation. |
+| **`requested_size`** | Requested new size pure allocation or reallocation.<br> Set to `0` for freeing.|
+| **`granted_size`** | Optional pointer to variable where the function stores the [granted amount](#anchor_granted_memory).<br> Set to `NULL` when not needed. |
 
-   * `current_size` (only `tbman_nalloc`) <br>
-Previously requested or [granted size](#anchor_granted_memory) for freeing or reallocating a memory instance.
-Set to `0` for pure allocation.
+### Return value
 
-   * `requested_size` <br>
-Requested new size pure allocation or reallocation.<br>
-Set to `0` for freeing.
-
-   * `granted_size` <br>
-Optional pointer to variable where the function stores the [granted amount](#anchor_granted_memory).<br>
-Set to `NULL` when not needed.
-
-**Return value**<br>
 Pointer to new memory instance for pure allocation or reallocation. Returns `NULL` in case of freeing.
 
 <a name="anchor_automatic_alignment"></a>
@@ -331,12 +325,14 @@ void tbman_for_each_instance(
 
 `cb` is a *callback function*. It is called for each instance active at the time of calling `tbman_for_each_instance`.
 
-**Arguments:**
+#### Arguments
 
-   * **cp** - Pointer to callback function.
-   * **arg** - Custom argument passed through to each callback.
-   * **ptr** - Address of the memory instance
-   * **space** - Number of bytes granted to the instance.
+| Name      | Description  |
+| :----     | :---------------------------  |
+| **`cb`**    | Pointer to callback function |
+| **`arg`**   | Custom argument passed to each callback |
+| **`ptr`**   | Address of the memory instance |
+| **`space`** | Number of bytes granted to the instance |
 
 Changing tbman's state inside a callback function is allowed. E.g. The callback function may free or allocate memory.
 Keep in mind, though, that all instances, producing a callback, are determined before executing the first callback.
@@ -485,7 +481,7 @@ int main( int argc, char* argv[] )
    {
       fprintf( stderr, "Memory leak of %zu bytes detected.\n", tbman_total_granted_space() );
    }
-   tbman_close();    
+   tbman_close();
    return my_exit_state;
 }
 ```
