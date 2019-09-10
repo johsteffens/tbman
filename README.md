@@ -42,13 +42,11 @@ in C and C++ code.
 * Very fast. ([*You can easily verify this yourself.*](#anchor_quick_evaluation))
 * Low fragmentation of system memory.
 * Few system calls.
-* [Automatic alignment](#anchor_automatic_alignment) even for SIMD data types.
-* [Automatic leak detection.](#anchor_integrated_leak_detection)
-* [Diagnostic features.](#anchor_diagnostic_features)
-* [Feedback of granted memory.](#anchor_granted_memory)
-* Platform independence:
-     * Supports platforms satisfying the [build requirements](#anchor_build_requirements) below.
-     * Tested on Intel and ARM platforms.
+* [Improved Alignment](#anchor_automatic_alignment).
+* [Integrated Leak Detection](#anchor_integrated_leak_detection)
+* [Diagnostic Features](#anchor_diagnostic_features)
+* [Granted Memory](#anchor_granted_memory)
+* [Platform Independence](#anchor_build_requirements)
 
 <a name="anchor_how_to_use_it"></a>
 # How to use it
@@ -198,7 +196,7 @@ Pointer to new memory instance for pure allocation or reallocation. Returns `NUL
 <a name="anchor_automatic_alignment"></a>
 ## Automatic Alignment
 
-Tbman aligns the memory instance. 
+Tbman aligns the memory instance selectively. 
 This covers all standard C/C++ data types `char, short, int, float, double, etc`
 and also larger types such as `int32x4_t, float32x4_t, etc`, which are typically 
 used for SIMD-extensions such as `SSE, AVX, NEON, etc`.
