@@ -21,7 +21,7 @@
       * [Memory Model](#anchor_memory_model)
       * [Debugging Tools](#anchor_debugging_tools)
    * [How it works internally](#anchor_how_it_works_internally)
-   * [Motivation](#anchor_motivation)
+   * [Motivation/Origin](#anchor_motivation)
 
 <a name="anchor_what_it_is"></a>
 # What it is
@@ -527,13 +527,27 @@ then the returned memory is aligned to the lesser of _**m**_ and
 [`TBMAN_ALIGN`](https://github.com/johsteffens/tbman/blob/848bebed1648d66d1fe101ee19f4803fed8ea81a/tbman.c#L43).
 
 <a name="anchor_motivation"></a>
-# Motivation
+# Motivation / Origin
 
-This memory manager has originally been conceived and developed for the project
+Tbman has originally been conceived and developed for the project
 [beth](https://github.com/johsteffens/beth).
-For those interested in the manager but not keen on digesting the whole of project beth,
-we created this compact stand-alone solution as spin-off-project [tbman](https://github.com/johsteffens/tbman).
+
+For those interested in elementary memory management
+but not keen on digesting the whole of project beth, 
+we offer herewith a simplified and better documented spin-off.
+
+The beth-memory-manager provides additionally: 
+
+   * Integrated Reference Management
+   * Garbage Collection 
+   * ... and more
+
+Location: [beth/lib/bcore/](https://github.com/johsteffens/beth/tree/master/lib/bcore)bcore_tbman.*
+*(Note that [beth](https://github.com/johsteffens/beth) carries a different
+[license](https://github.com/johsteffens/beth/blob/master/LICENSE).)*
+
+------
 
 Thanks for reading. If you find it useful, have questions or suggestions I'd be happy to hear from you.
 
-<sub>*Johannes Steffens*</sub>
+<sub>&copy; Johannes B. Steffens</sub>
