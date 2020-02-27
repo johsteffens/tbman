@@ -490,8 +490,9 @@ int main( int argc, char* argv[] )
 <a name="anchor_block-pooling-layer"></a>
 ## Block-Pooling-Layer with Tokens
 
-Tbman represents a dedicated management layer.
-It uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution.
+Tbman represents a dedicated management layer, which sits between your code and the system. It communicates with the system to obtain/return larger memory blocks, which are subdivided for dispatching/recollection in your program.
+
+Tbman uses "conservative" memory pooling with multiple fixed size block-managers at a strategic size-distribution.
 Multiple pools are managed in a btree.
 When the client (your code) requests or returns small-medium sized memory instances,
 tbman dispatches/recollects pool memory accordingly without initiating system requests.
