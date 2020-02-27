@@ -504,7 +504,7 @@ Each memory instance is associated with an internal node controlled by tbman.
 The manager dedicates separate memory areas for node-control and user space (== memory space used by the client).
 The content of user space does not affect node management.
 Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory)
-are less likely messing up the manager itself and can therefore more easily be tracked down.
+are less likely messing up the manager itself. They have therefore a better chance to be tracked down.
 
 A special design feature is the combination of associative tokens with a special alignment scheme.
 It provides quick (O(1) complexity) binding of memory address and manager-nodes.
