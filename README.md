@@ -92,10 +92,13 @@ void operator delete( void* p )
 `eval.c` is an evaluation program simulating realistic runtime conditions for a memory manager. 
 It verifies correct functionality and assesses the processing speed. 
 It compares the performance of stdlib functions with tbman functions. 
-You can quickly run it yourself:
+You can quickly run it yourself.
 
-   * Enter folder with source files and run: <br>
-   ```$ gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out```
+Enther the folder with source files:
+```
+$ gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread
+§ ./a.out
+```
 
 ## Requirements/Dependencies
 
