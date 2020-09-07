@@ -51,25 +51,9 @@ in C and C++ code.
 <a name="anchor_how_to_use_it"></a>
 # How to use it
 
-* `git clone https://github.com/johsteffens/tbman.git`
+* `$ git clone https://github.com/johsteffens/tbman.git`
 
 <a name="anchor_build_requirements"></a>
-## Requirements/Dependencies
-
-   * Compiler supporting the C11 standard (e.g. gcc, clang).
-   * Compiler options: `-std=c11`, `-O3` for max speed; (or compatible settings)
-   * Linker options: `-lm -lpthread` (or compatible settings)
-   * **POSIX**: Out of the box, tbman relies on two features, which are normally available on POSIX compliant systems
-      * [Flat Memory Model](#anchor_memory_model).
-      * Library pthread: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`.
-      * Platforms with sufficient POSIX compliance: **Linux, Android, Darwin (and related OS)**
-
-   * **pthread missing**:
-      * **Windows**: Three different possibilities:
-         * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
-         * In `tbman.c`: Replace pthred-locks by native locks; then build without pthread.
-         * Windows 10: Provides an optional Linux-Subsystem.
-
 ## In your workspace
 
    * Compile `tbman.c` and `btree.c` (either among your source files or into a static library)
@@ -111,7 +95,24 @@ It compares the performance of stdlib functions with tbman functions.
 You can quickly run it yourself:
 
    * Enter folder with source files and run: <br>
-   ```gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out```
+   ```$ gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread; ./a.out```
+
+## Requirements/Dependencies
+
+   * Compiler supporting the C11 standard (e.g. gcc, clang).
+   * Compiler options: `-std=c11`, `-O3` for max speed; (or compatible settings)
+   * Linker options: `-lm -lpthread` (or compatible settings)
+   * **POSIX**: Out of the box, tbman relies on two features, which are normally available on POSIX compliant systems
+      * [Flat Memory Model](#anchor_memory_model).
+      * Library pthread: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`.
+      * The following platforms have sufficient POSIX compliance: **Linux, Android, Darwin (and related OS)**
+
+   * **If pthread is not available ...**:
+      * In `tbman.c`: Replace pthread-locks by native locks; then build without pthread.
+      
+      * **Windows**: You can setup a posix subsystem
+         * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
+         * Windows 10: Provides an optional Linux-Subsystem.
 
 <a name="anchor_features"></a>
 # Detailed Description
