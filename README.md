@@ -97,7 +97,7 @@ You can quickly run it yourself.
 Enther the folder with source files:
 ```
 $ gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread
-§ ./a.out
+$ ./a.out
 ```
 
 ## Requirements/Dependencies
