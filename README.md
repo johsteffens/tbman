@@ -381,7 +381,7 @@ Functions `tbman_` above relate to global management (one manager for everything
 You can also create multiple individual, independent and dedicated managers using the the `tbman_s` object.
 Each manager has its own mutex.
 This is particularly helpful in a multi threaded context.
-Giving each thread its own manager for thread-local memory can reduce lock-contentaion.
+Giving each thread its own manager for thread-local memory can reduce lock-contention.
 
 For each of above functions `tbman_` there exists a corresponding function with postfix `_s`
 meant for a dedicated manager instance.
