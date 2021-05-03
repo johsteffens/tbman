@@ -274,7 +274,7 @@ tbman_open();
 tbman_malloc( 13 );
 tbman_malloc( 7 );
 
-// tbman_close() will produce a message by like this:
+// tbman_close() will produce a message like this:
 // TBMAN WARNING: Detected 2 instances with a total of 24 bytes leaking space.
 tbman_close();
 ```
