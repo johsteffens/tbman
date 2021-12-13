@@ -508,14 +508,17 @@ Compared to always using system calls it can speed up overall processing and/or 
 particularly in programs where many small sized memory instances are used.
 
 Each memory instance is associated with an internal node controlled by tbman.
-The manager dedicates separate memory areas for node-control and user space (== memory space used by the client).
+The manager dedicates separate memory areas for node-data and user space (user space == memory space used by the client).
 The content of user space does not affect node management.
-Hence, specific software bugs such as using a dangling pointer (pointer to already collected memory)
-are less likely messing up the manager itself. They have therefore a better chance to be tracked down.
 
-A special design feature is the combination of associative tokens with a special alignment scheme.
-It provides quick (O(1) complexity) binding of memory address and manager-nodes.
-This method ensures very low latency for allocation and collection and it gives this manager its name:
+A special design feature is binding the allocated memory address to the address of the associated node in tbman.
+This allows fast node retrieval at O(1) complexity. Since the association is address-based (and not meta-data-based
+as typical in some conventional memory managers),
+it cannot be altered or destroyed by a faulty memory override in user space. Hence, specific software bugs such as using a 
+dangling pointer (pointer to already collected memory) or writing past allocated space, are less likely to affect manager's
+integrity. (Such bugs still affect the integity of your program, though.).
+
+The design ensures very low latency for allocation and collection and it gives this manager its name:
 tbman = token-block-manager.
 
 When the client requests a large memory instance, where pooling would be wasteful,
