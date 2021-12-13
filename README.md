@@ -110,9 +110,11 @@ $ ./a.out
       * Library pthread: Tbman uses `pthread_mutex_t` (locking) for thread safety in `tbman.c`.
       * The following platforms have sufficient POSIX compliance: **Linux, Android, Darwin (and related OS)**
 
-   * **If pthread is not available ...**:
-      * In `tbman.c`: Replace pthread-locks by native locks; then build without pthread.
-      
+   * **If pthread is not available, try one of the folowing options ...**:
+      * Check if the [^Tread Support Library^](https://en.cppreference.com/w/c/thread) is available for your traget platform. In tbman.c: Use **mtx_t** instead of **pthread_mutex_t**; replace functions **pthread_mutex_...** with corresponding functions **mtx_...**; use **call_once** instead of **pthread_once**.
+
+      * If you have other native locks available: In `tbman.c`: Replace pthread-locks by native locks.
+
       * **Windows**: You can setup a posix subsystem
          * [Set up a POSIX-environment via cygwin.](https://github.com/johsteffens/beth/wiki/Requirements#how-to-setup-a-posix-environment-for-beth-on-windows)
          * Windows 10: Provides an optional Linux-Subsystem.
