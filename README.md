@@ -516,7 +516,7 @@ This allows fast node retrieval at O(1) complexity. Since the association is add
 as typical in some conventional memory managers),
 it cannot be altered or destroyed by a faulty memory override in user space. Hence, specific software bugs such as using a 
 dangling pointer (pointer to already collected memory) or writing past allocated space, are less likely to affect manager's
-integrity. (Such bugs still affect the integity of your program, though.).
+integrity. (Such bugs still affect the integrity of your program, though.).
 
 The design ensures very low latency for allocation and collection and it gives this manager its name:
 tbman = token-block-manager.
