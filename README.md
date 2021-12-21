@@ -162,7 +162,7 @@ int main( int argc, char* argv[] )
 
 If you free or reallocate memory and know the previously allocated amount, you can further speed up processing by 
 telling tbman about the currently allocated size using `tbman_nrealloc` and `tbman_nfree`. 
-This helps the manager find the corresponding node for the memory instance.
+This helps the manager finding the corresponding node for the memory instance faster.
 
 ```C
 // realloc with size communication
