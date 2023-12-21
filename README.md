@@ -460,7 +460,7 @@ Certain debugging tools (e.g. [valgrind](http://www.valgrind.org)) can analyze t
 One of the methods employed is capturing interactions of the program with the system.
 
 Since tbman represents an intermediate layer between your program and the system,
-effectively reducing system interactions, the tool captures less activity. For example,
+effectively reducing system interactions, such a tool might capture less activity. For example,
 it might not recognize all the boundaries of a single tbman-allocation and can therefore
 not verify the validity of all types of block-access by the program.
 Since `tbman_close()` returns all [tbman-pools](#anchor_block-pooling-layer) to the system,
