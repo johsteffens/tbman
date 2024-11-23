@@ -9,7 +9,7 @@
       * [Basics](#anchor_basic)
       * [Faster collection](#anchor_faster_collection)
       * [One function for everything](#anchor_one_function_for_everything)
-      * [Automatic Alignment](#anchor_automatic_alignment)
+      * [Advanced Alignment](#anchor_advanced_alignment)
       * [Granted Memory](#anchor_granted_memory)
       * [Diagnostic Features](#anchor_diagnostic_features)
       * [Thread safety](#anchor_thread_safety)
@@ -42,7 +42,7 @@ in C and C++ code.
 * Very fast. ([*You can easily verify this yourself.*](#anchor_quick_evaluation))
 * Low fragmentation of system memory.
 * Few system calls.
-* [Improved Alignment](#anchor_automatic_alignment).
+* [Improved Alignment](#anchor_advanced_alignment).
 * [Integrated Leak Detection](#anchor_integrated_leak_detection)
 * [Diagnostic Features](#anchor_diagnostic_features)
 * [Granted Memory](#anchor_granted_memory)
@@ -111,7 +111,7 @@ $ ./a.out
       * The following platforms have sufficient POSIX compliance: **Linux, Android, Darwin (and related OS)**
 
    * **If pthread is not available, try one of the folowing options ...**:
-      * Check if the [^Tread Support Library^](https://en.cppreference.com/w/c/thread) is available for your traget platform. In tbman.c: Use **mtx_t** instead of **pthread_mutex_t**; replace functions **pthread_mutex_...** with corresponding functions **mtx_...**; use **call_once** instead of **pthread_once**.
+      * Check if the &#x1F517;[Tread Support Library](https://en.cppreference.com/w/c/thread) is available for your traget platform. In tbman.c: Use **mtx_t** instead of **pthread_mutex_t**; replace functions **pthread_mutex_...** with corresponding functions **mtx_...**; use **call_once** instead of **pthread_once**.
 
       * If you have other native locks available: In `tbman.c`: Replace pthread-locks by native locks.
 
@@ -199,8 +199,8 @@ The two functions can also be mixed; even serving the same memory instance.
 
 Pointer to new memory instance for pure allocation or reallocation. Returns `NULL` in case of freeing.
 
-<a name="anchor_automatic_alignment"></a>
-## Automatic Alignment
+<a name="anchor_advanced_alignment"></a>
+## Advanced Alignment
 
 Tbman aligns the memory instance selectively. 
 This covers all standard C/C++ data types `char, short, int, float, double, etc`
@@ -544,7 +544,7 @@ Tbman has originally been conceived and developed for the project
 
 For those interested in elementary memory management
 but not keen on digesting the whole of project beth, 
-we offer herewith a simplified and better documented spin-off.
+I offer herewith a simplified and better documented spin-off.
 
 The beth-memory-manager provides additionally: 
 
@@ -553,7 +553,7 @@ The beth-memory-manager provides additionally:
    * ... and more
 
 Location: [beth/lib/bcore/](https://github.com/johsteffens/beth/tree/master/lib/bcore)bcore_tbman.*
-*(Note that [beth](https://github.com/johsteffens/beth) carries a different
+*(Note that [beth](https://github.com/johsteffens/beth) uses a different
 [license](https://github.com/johsteffens/beth/blob/master/LICENSE).)*
 
 ------
