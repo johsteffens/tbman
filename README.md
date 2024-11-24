@@ -177,7 +177,7 @@ for the memory instance addressed by `current_ptr`.
 <a name="anchor_one_function_for_everything"></a>
 ## One function for everything
 
-Alternatively, you can use one of the following two functions for memory management including some special features of tbman.
+Alternatively, you can use just one of the following two functions for all memory management including some special features of tbman.
 
 ```C
 void* tbman_alloc(  void* current_ptr,                      size_t requested_size, size_t* granted_size );
