@@ -42,7 +42,7 @@ in C and C++ code.
 * Very fast. ([*You can easily verify this yourself.*](#anchor_quick_evaluation))
 * Low fragmentation of system memory.
 * Few system calls.
-* [Improved Alignment](#anchor_advanced_alignment).
+* [Advanced Alignment](#anchor_advanced_alignment).
 * [Integrated Leak Detection](#anchor_integrated_leak_detection)
 * [Diagnostic Features](#anchor_diagnostic_features)
 * [Granted Memory](#anchor_granted_memory)
