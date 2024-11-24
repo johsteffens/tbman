@@ -216,8 +216,8 @@ int32x4_t* my_data = tbman_malloc( sizeof( int32x4_t ) * 10 ); // aligned array 
 <a name="anchor_granted_memory"></a>
 ## Granted Memory
 
-For design reasons tbman might find no proper use for some space immediately following your requested memory block.
-In that case it grants you that extra space, appending it to your request.
+For design reasons, tbman might find no proper use for some space immediately following your requested memory block.
+In that case, it grants you that extra space, appending it to your request.
 You may use the granted space as if you had requested it in the first place.
 <br><sub>*(Note: Tbman never grants less than requested.)*</sub>
 
@@ -273,8 +273,8 @@ If any are found, a message is send to stderr.
 tbman_open();
 
 // We are deliberately leaking some memory.
-tbman_malloc( 13 );
-tbman_malloc( 7 );
+tbman_malloc( 16 );
+tbman_malloc( 8 );
 
 // tbman_close() will produce a message like this:
 // TBMAN WARNING: Detected 2 instances with a total of 24 bytes leaking space.
