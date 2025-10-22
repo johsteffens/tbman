@@ -539,21 +539,21 @@ then the returned memory is aligned to the lesser of _**m**_ and
 <a name="anchor_motivation"></a>
 # Motivation / Origin
 
-Tbman has originally been conceived and developed for the project
+I conceived and developed tbman originally for my project
 [beth](https://github.com/johsteffens/beth).
 
 For those interested in elementary memory management
 but not keen on digesting the whole of project beth, 
-I offer herewith a simplified and better documented spin-off.
+I offer herewith a simplified but better documented spin-off.
 
-The beth-memory-manager provides additionally: 
+The beth-memory-manager has some aditional features
 
    * Integrated Reference Management
    * Garbage Collection 
    * ... and more
 
 Location: [beth/lib/bcore/](https://github.com/johsteffens/beth/tree/master/lib/bcore)bcore_tbman.*
-*(Note that [beth](https://github.com/johsteffens/beth) uses a different
+*(Note that for [beth](https://github.com/johsteffens/beth) I chose a different
 [license](https://github.com/johsteffens/beth/blob/master/LICENSE).)*
 
 ------
