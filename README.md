@@ -37,7 +37,7 @@ which can replace corresponding stdlib functions
 in C and C++ code.
 
 <a name="anchor_benefits"></a>
-# Benefits
+# Features
 
 * Very fast. ([*You can easily verify this yourself.*](#anchor_quick_evaluation))
 * Low fragmentation of system memory.
