@@ -3,7 +3,7 @@
 ## Table of Content
 
    * [What it is](#anchor_what_it_is)
-   * [Benefits](#anchor_benefits)
+   * [Features](#features)
    * [How to use it](#anchor_how_to_use_it)
    * [Detailed Description](#anchor_features)
       * [Basics](#anchor_basic)
@@ -36,7 +36,6 @@ which can replace corresponding stdlib functions
 
 in C and C++ code.
 
-<a name="anchor_benefits"></a>
 # Features
 
 * Very fast. ([*You can easily verify this yourself.*](#anchor_quick_evaluation))
