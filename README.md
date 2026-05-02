@@ -28,9 +28,9 @@
 
 Tbman is a general-purpose memory manager offering (among others) these functions
 
-`tbman_malloc, tbman_free, tbman_realloc`,
+`tbman_malloc, tbman_free, tbman_realloc`.
 
-which can replace corresponding stdlib functions
+They can replace corresponding stdlib functions
 
 `malloc, free, realloc`,
 
