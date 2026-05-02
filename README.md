@@ -1,28 +1,5 @@
 # Tbman - Fast and Easy Memory Manager
 
-## Table of Content
-
-   * [What it is](#anchor_what_it_is)
-   * [Features](#features)
-   * [How to use it](#anchor_how_to_use_it)
-   * [Detailed Description](#anchor_features)
-      * [Basics](#anchor_basic)
-      * [Faster collection](#anchor_faster_collection)
-      * [One function for everything](#anchor_one_function_for_everything)
-      * [Advanced Alignment](#anchor_advanced_alignment)
-      * [Granted Memory](#anchor_granted_memory)
-      * [Diagnostic Features](#anchor_diagnostic_features)
-      * [Thread safety](#anchor_thread_safety)
-      * [Multiple managers](#anchor_multiple_managers)
-      * [Mixing different memory managers](#anchor_mixing_different_memory_managers)
-   * [Side effects](#anchor_side_effects)
-      * [Prefetching](#anchor_prefetching)
-      * [Unused Memory](#anchor_unused_memory)
-      * [Memory Model](#anchor_memory_model)
-      * [Debugging Tools](#anchor_debugging_tools)
-   * [How it works internally](#anchor_how_it_works_internally)
-   * [Motivation/Origin](#anchor_motivation)
-
 <a name="anchor_what_it_is"></a>
 # What it is
 
