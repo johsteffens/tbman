@@ -27,7 +27,7 @@ in C and C++ code.
 <a name="anchor_how_to_use_it"></a>
 # How to use it
 
-* `$ git clone https://github.com/johsteffens/tbman.git`
+* `git clone https://github.com/johsteffens/tbman.git`
 
 <a name="anchor_build_requirements"></a>
 ## In your workspace
@@ -72,8 +72,8 @@ You can quickly run it yourself.
 
 Enter the folder with source files:
 ```
-$ gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread
-$ ./a.out
+gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread -o eval
+./eval
 ```
 
 ## Requirements/Dependencies
