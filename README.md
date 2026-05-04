@@ -70,8 +70,8 @@ It verifies correct functionality and assesses the processing speed.
 It compares the performance of stdlib functions with tbman functions. 
 You can quickly run it yourself.
 
-Enter the folder with source files:
 ```
+cd tbman
 gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread -o eval
 ./eval
 ```
