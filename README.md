@@ -26,8 +26,7 @@ in C and C++ code.
 
 <a name="anchor_how_to_use_it"></a>
 # How to use it
-
-* `git clone https://github.com/johsteffens/tbman.git`
+[Quick Evaluation](#quick-evaluation)
 
 <a name="anchor_build_requirements"></a>
 ## In your workspace
@@ -71,6 +70,7 @@ It compares the performance of stdlib functions with tbman functions.
 You can quickly run it yourself.
 
 ```
+git clone https://github.com/johsteffens/tbman.git
 cd tbman
 gcc -std=c11 -O3 btree.c tbman.c eval.c -lm -lpthread -o eval
 ./eval
